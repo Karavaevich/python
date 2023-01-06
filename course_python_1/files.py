@@ -103,6 +103,6 @@ def create_new_file_with_emails(original_file, filled_file):
     result_file_object.close()
 
 
-task_file = "course_python_1/15_files_task_file.txt"
-result_file = "course_python_1/15_files_task_file_result.csv"
+task_file = "course_python_1/files_task_file.txt"
+result_file = "course_python_1/files_task_file_result.csv"
 create_new_file_with_emails(task_file, result_file)
