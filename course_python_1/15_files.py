@@ -28,7 +28,7 @@ def is_telephone_number(input_string):
                     return False
         else:
             return False
-    except ValueError as ex:
+    except Exception as ex:
         print("WARN: skip, caught Exception while checking telephone number: ", end="")
         print(ex)
         return False
@@ -64,10 +64,10 @@ def fill_list_of_lines_from_file(file_name):
 
 def enrich_list_of_lines(list_of_lines, list_of_names_and_surnames_with_emails):
     for line in list_of_lines:
-        for subline in list_of_names_and_surnames_with_emails:
-            if (line[1] == subline[0]) & (line[2] == subline[1]) & (subline[2] != "used"):
-                line[0] = subline[2]
-                subline[2] = "used"
+        for sub_line in list_of_names_and_surnames_with_emails:
+            if (line[1] == sub_line[0]) & (line[2] == sub_line[1]) & (sub_line[2] != "used"):
+                line[0] = sub_line[2]
+                sub_line[2] = "used"
                 break
     return list_of_lines
 
@@ -75,15 +75,13 @@ def enrich_list_of_lines(list_of_lines, list_of_names_and_surnames_with_emails):
 def create_filled_list_with_emails(filename):
     list_of_lines = fill_list_of_lines_from_file(filename)
     list_of_names_and_surnames = []
-    header = True
     for line in list_of_lines:
         name_and_surname = []
-        if (header | len(line[1]) == 0) | (len(line[2]) == 0) | (not is_telephone_number(line[3])):
+        if (len(line[1]) == 0) | (len(line[2]) == 0) | (not is_telephone_number(line[3])):
             continue
         name_and_surname.append(line[1])
         name_and_surname.append(line[2])
         list_of_names_and_surnames.append(name_and_surname)
-        header = False
 
     list_of_names_and_surnames_with_emails = email_gen(list_of_names_and_surnames)
     return enrich_list_of_lines(list_of_lines, list_of_names_and_surnames_with_emails)
