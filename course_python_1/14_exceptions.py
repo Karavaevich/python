@@ -20,7 +20,7 @@ def is_telephone_number(st):
                     return False
         else:
             return False
-    except ValueError as ex:
+    except Exception as ex:
         print("ERROR: caught Exception: ", end="")
         print(ex)
         return False
@@ -28,7 +28,7 @@ def is_telephone_number(st):
         return True
 
 
-input_string = "12322r4"
+input_string = "DFGVCDF"
 
 if is_telephone_number(input_string):
     print(input_string + " is telephone number")
