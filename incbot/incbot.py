@@ -1,17 +1,37 @@
 from typing import Optional
 
 import telebot
-import random
 import flask
 import time
 import logging
 from telebot import types
 from datetime import datetime
 
+
+
+# Quick'n'dirty SSL certificate generation:
+#
+# openssl genrsa -out webhook_pkey.pem 2048
+# openssl req -new -x509 -days 3650 -key webhook_pkey.pem -out webhook_cert.pem
+#
+# When asked for "Common Name (e.g. server FQDN or YOUR name)" you should reply
+# with the same value in you put in WEBHOOK_HOST
+
+#======
 API_TOKEN = '6402634448:AAGq1MQC1OtiXPxW9ybdWiCLrG_pBAQaEQI'
-APP_HOST = '5.252.21.134'
-APP_PORT = 8444
-WEB_HOOK_URL = '5.252.21.134'
+WEBHOOK_HOST = '5.252.21.134'
+WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
+WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
+WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
+WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
+
+WEBHOOK_SSL_CERT = '/ssl_for_bot/webhook_cert.pem'  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = '/ssl_for_bot/webhook_pkey.pem'  # Path to the ssl private key
+#======
+
+# APP_HOST = '5.252.21.134'
+# APP_PORT = 8444
+# WEB_HOOK_URL = '5.252.21.134'
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG)
@@ -166,10 +186,20 @@ def clear_inc():
     list_of_incs.clear()
 
 
+# if __name__ == '__main__':
+#     bot.remove_webhook()
+#     time.sleep(1)
+#     bot.set_webhook(url=WEB_HOOK_URL)
+#     app.run(host=APP_HOST, port=APP_PORT, debug=True)
+
+# bot.infinity_polling(timeout=10, long_polling_timeout = 5)
+
 if __name__ == '__main__':
     bot.remove_webhook()
     time.sleep(1)
-    bot.set_webhook(url=WEB_HOOK_URL)
-    app.run(host=APP_HOST, port=APP_PORT, debug=True)
-
-# bot.infinity_polling(timeout=10, long_polling_timeout = 5)
+    bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
+                    certificate=open(WEBHOOK_SSL_CERT, 'r'))
+    app.run(host=WEBHOOK_LISTEN,
+            port=WEBHOOK_PORT,
+            ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
+            debug=True)
