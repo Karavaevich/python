@@ -9,7 +9,7 @@ from telebot import types
 from datetime import datetime
 
 API_TOKEN = '6402634448:AAGq1MQC1OtiXPxW9ybdWiCLrG_pBAQaEQI'
-APP_HOST = '127.0.0.1'
+APP_HOST = '5.252.21.134'
 APP_PORT = 8444
 WEB_HOOK_URL = 'https://10cf-217-107-125-211.ngrok.io'
 
