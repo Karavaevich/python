@@ -19,14 +19,14 @@ from datetime import datetime
 
 #======
 API_TOKEN = '6402634448:AAGq1MQC1OtiXPxW9ybdWiCLrG_pBAQaEQI'
-WEBHOOK_HOST = '5.252.21.134'
+WEBHOOK_HOST = 'vm1658918.stark-industries.solutions'
 WEBHOOK_PORT = 443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '5.252.21.134'  # In some VPS you may need to put here the IP addr
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
 
-WEBHOOK_SSL_CERT = '/ssl_for_bot/webhook_cert.pem'  # Path to the ssl certificate
-WEBHOOK_SSL_PRIV = '/ssl_for_bot/webhook_pkey.pem'  # Path to the ssl private key
+WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
 #======
 
 # APP_HOST = '5.252.21.134'
