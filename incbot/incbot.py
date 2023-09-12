@@ -18,7 +18,7 @@ from datetime import datetime
 # with the same value in you put in WEBHOOK_HOST
 
 #======
-API_TOKEN = '$TOKEN'
+API_TOKEN = '6402634448:AAGq1MQC1OtiXPxW9ybdWiCLrG_pBAQaEQI'
 WEBHOOK_HOST = '5.252.21.134'
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '5.252.21.134'  # In some VPS you may need to put here the IP addr
