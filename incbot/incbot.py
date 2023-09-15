@@ -17,17 +17,14 @@ from datetime import datetime
 # When asked for "Common Name (e.g. server FQDN or YOUR name)" you should reply
 # with the same value in you put in WEBHOOK_HOST
 
-#======
 API_TOKEN = '6402634448:AAGq1MQC1OtiXPxW9ybdWiCLrG_pBAQaEQI'
 WEBHOOK_HOST = '5.252.21.134'
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '5.252.21.134'  # In some VPS you may need to put here the IP addr
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
-
 WEBHOOK_SSL_CERT = '/ssl_for_bot/webhook_cert.pem'  # Path to the ssl certificate
 WEBHOOK_SSL_PRIV = '/ssl_for_bot/webhook_pkey.pem'  # Path to the ssl private key
-#======
 
 APP_HOST = '127.0.0.1'
 APP_PORT = 8444
@@ -53,17 +50,6 @@ class Inc:
 
 
 list_of_incs = []
-
-
-# @app.route('/', methods=['POST'])
-# def webhook():
-#     if flask.request.headers.get('content-type') == 'application/json':
-#         json_string = flask.request.get_data().decode('utf-8')
-#         update = telebot.types.Update.de_json(json_string)
-#         bot.process_new_updates([update])
-#         return f'{json_string}'
-#     else:
-#         flask.abort(403)
 
 # Process webhook calls
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
@@ -194,15 +180,6 @@ def check_inc_exist(num):
 
 def clear_inc():
     list_of_incs.clear()
-
-
-# if __name__ == '__main__':
-#     bot.remove_webhook()
-#     time.sleep(1)
-#     bot.set_webhook(url=WEB_HOOK_URL)
-#     app.run(host=APP_HOST, port=APP_PORT, debug=True)
-
-# bot.infinity_polling(timeout=10, long_polling_timeout = 5)
 
 if __name__ == '__main__':
     bot.remove_webhook()
