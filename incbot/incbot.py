@@ -101,7 +101,7 @@ def get_user_text(message):
             else:
                 new_inc = create_inc(descr=des, start=str(get_now()))
                 bot.send_message(message.chat.id, print_inc(new_inc))
-        elif check_inc_exist(int(list_of_words_from_mes[1]) - 1):
+        elif check_inc_exist(int(list_of_words_from_mes[1])):
             if list_of_words_from_mes.__len__() > 2:
                 des = ''
                 for i in range(2, list_of_words_from_mes.__len__()):
