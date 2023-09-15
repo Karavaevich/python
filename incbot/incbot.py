@@ -49,7 +49,7 @@ class Inc:
         self.end_time: str = end_time
 
 
-list_of_incs = []
+dict_of_incs = dict()
 
 # Process webhook calls
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
@@ -113,7 +113,7 @@ def get_user_text(message):
                     update_inc(inc_num=int(list_of_words_from_mes[1]) - 1, text=des)
                     bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]) - 1)))
     elif list_of_words_from_mes[0].lower() == 'всеинц':
-        bot.send_message(message.chat.id, str(print_list_of_incs(list_of_incs)))
+        bot.send_message(message.chat.id, str(print_dict_of_incs(dict_of_incs)))
     elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
         clear_inc()
         bot.send_message(message.chat.id, 'все события удалены')
@@ -121,26 +121,26 @@ def get_user_text(message):
 
 def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
     global last_inc_num
-    global list_of_incs
+    global map_of_incs
     inc_num = last_inc_num + 1
     last_inc_num = inc_num
     new_inc = Inc(number=inc_num, description=descr, start_time=start, end_time=end)
-    list_of_incs.append(new_inc)
+    dict_of_incs[inc_num] = new_inc
     return new_inc
 
 
 def get_inc(inc_num: int):
-    return list_of_incs[inc_num]
+    return dict_of_incs[inc_num]
 
 
 def update_inc(inc_num, text: Optional[str] = None, end: Optional[str] = None):
     if (text is not None) & (text != ''):
-        if list_of_incs[inc_num].description is None:
-            list_of_incs[inc_num].description = text
+        if dict_of_incs[inc_num].description is None:
+            dict_of_incs[inc_num].description = text
         else:
-            list_of_incs[inc_num].update = text
+            dict_of_incs[inc_num].update = text
     if end is not None:
-        list_of_incs[inc_num].end_time = end
+        dict_of_incs[inc_num].end_time = end
 
 
 def print_inc(inc):
@@ -163,23 +163,23 @@ def get_now():
     return datetime.now().strftime('%d.%m %H:%M:%S')
 
 
-def print_list_of_incs(list_of_incs):
+def print_dict_of_incs(dict_of_incs):
     result = ''
-    if list_of_incs.__len__() != 0:
+    if dict_of_incs.__len__() != 0:
         result = 'cписок: \n\n'
-        for inc in list_of_incs:
-            result += print_inc(inc)
+        for inc_num in dict_of_incs.keys():
+            result += print_inc(dict_of_incs[inc_num])
     else:
         result = 'событий нет'
     return result
 
 
 def check_inc_exist(num):
-    return list_of_incs.__len__() > num
+    return dict_of_incs.__len__() > num
 
 
 def clear_inc():
-    list_of_incs.clear()
+    dict_of_incs.clear()
 
 if __name__ == '__main__':
     bot.remove_webhook()
