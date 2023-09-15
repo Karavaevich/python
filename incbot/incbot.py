@@ -175,7 +175,10 @@ def print_dict_of_incs(dict_of_incs):
 
 
 def check_inc_exist(num):
-    return dict_of_incs.__contains__(num)
+    if num in dict_of_incs:
+        return True
+    else:
+        return False
 
 
 def clear_inc():
