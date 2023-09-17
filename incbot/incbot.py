@@ -1,3 +1,4 @@
+import trace
 from typing import Optional
 
 import telebot
@@ -127,7 +128,7 @@ def get_user_text(message):
             clear_inc()
             bot.send_message(message.chat.id, 'все события удалены')
     except:
-        bot.send_message(message.chat.id, 'ошибка')
+        bot.send_message(message.chat.id, 'ошибка\n' + str(trace.Trace))
 
 
 def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
