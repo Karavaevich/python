@@ -7,8 +7,6 @@ import logging
 from telebot import types
 from datetime import datetime
 
-
-
 # Quick'n'dirty SSL certificate generation:
 #
 # openssl genrsa -out webhook_pkey.pem 2048
@@ -88,40 +86,45 @@ def get_user_text(message):
     mes: str = message.text
     list_of_words_from_mes = mes.split(' ')
 
-    if list_of_words_from_mes[0].lower() == 'инц':
-        if list_of_words_from_mes.__len__() == 1:
-            new_inc = create_inc(start=str(get_now()))
-            bot.send_message(message.chat.id, print_inc(new_inc))
-        elif not list_of_words_from_mes[1].isnumeric():
-            des = ''
-            for i in range(1, list_of_words_from_mes.__len__()):
-                des += str(list_of_words_from_mes[i]) + ' '
-            if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
-                new_inc = create_inc(descr=des.removesuffix('ок '), start=str(get_now()), end=str(get_now()))
+    try:
+        if list_of_words_from_mes[0].lower() == 'инц':
+            if list_of_words_from_mes.__len__() == 1:
+                new_inc = create_inc(start=str(get_now()))
                 bot.send_message(message.chat.id, print_inc(new_inc))
-            else:
-                new_inc = create_inc(descr=des, start=str(get_now()))
-                bot.send_message(message.chat.id, print_inc(new_inc))
-        elif check_inc_exist(int(list_of_words_from_mes[1])):
-            if list_of_words_from_mes.__len__() == 2:
-                bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
-            if list_of_words_from_mes.__len__() > 2:
-                if list_of_words_from_mes[2].lower() == 'удалить':
-                    bot.send_message(message.chat.id, 'удалено событие:\n' + print_inc(dict_of_incs.pop(int(list_of_words_from_mes[1]))))
+            elif not list_of_words_from_mes[1].isnumeric():
                 des = ''
-                for i in range(2, list_of_words_from_mes.__len__()):
+                for i in range(1, list_of_words_from_mes.__len__()):
                     des += str(list_of_words_from_mes[i]) + ' '
                 if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
-                    update_inc(inc_num=int(list_of_words_from_mes[1]), text=des.removesuffix('ок '), end=get_now())
-                    bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                    new_inc = create_inc(descr=des.removesuffix('ок '), start=str(get_now()), end=str(get_now()))
+                    bot.send_message(message.chat.id, print_inc(new_inc))
                 else:
-                    update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
-                    bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
-    elif list_of_words_from_mes[0].lower() == 'всеинц':
-        bot.send_message(message.chat.id, str(print_dict_of_incs(dict_of_incs)))
-    elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
-        clear_inc()
-        bot.send_message(message.chat.id, 'все события удалены')
+                    new_inc = create_inc(descr=des, start=str(get_now()))
+                    bot.send_message(message.chat.id, print_inc(new_inc))
+            elif check_inc_exist(int(list_of_words_from_mes[1])):
+                if list_of_words_from_mes.__len__() == 2:
+                    bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[3]))))
+                if list_of_words_from_mes.__len__() > 2:
+                    if list_of_words_from_mes[2].lower() == 'удалить':
+                        bot.send_message(message.chat.id,
+                                         'удалено событие:\n' + print_inc(dict_of_incs.pop(int(
+                                             list_of_words_from_mes[1]))))
+                    des = ''
+                    for i in range(2, list_of_words_from_mes.__len__()):
+                        des += str(list_of_words_from_mes[i]) + ' '
+                    if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
+                        update_inc(inc_num=int(list_of_words_from_mes[1]), text=des.removesuffix('ок '), end=get_now())
+                        bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                    else:
+                        update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
+                        bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+        elif list_of_words_from_mes[0].lower() == 'всеинц':
+            bot.send_message(message.chat.id, str(print_dict_of_incs(dict_of_incs)))
+        elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
+            clear_inc()
+            bot.send_message(message.chat.id, 'все события удалены')
+    except:
+        bot.send_message(message.chat.id, 'ошибка')
 
 
 def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
