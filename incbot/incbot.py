@@ -38,10 +38,11 @@ last_inc_num = 0
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates: Optional[dict] = {},
-                 end_time: Optional[str] = None):
+                 tks: Optional[str] = None, end_time: Optional[str] = None):
         self.number: int = number
         self.description: str = description
         self.updates: dict = updates
+        self.tks: str = tks
         self.start_time: str = start_time
         self.end_time: str = end_time
 
@@ -109,6 +110,8 @@ def get_user_text(message):
                         bot.send_message(message.chat.id,
                                          'удалено событие:\n' + print_inc(dict_of_incs.pop(int(
                                              list_of_words_from_mes[1]))))
+                    if (list_of_words_from_mes.__len__() > 3) & (list_of_words_from_mes[2].lower() == 'ткс') & (list_of_words_from_mes[3].isnumeric()) :
+                        update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
                     des = ''
                     for i in range(2, list_of_words_from_mes.__len__()):
                         des += str(list_of_words_from_mes[i]) + ' '
@@ -141,12 +144,14 @@ def get_inc(inc_num: int):
     return dict_of_incs[inc_num]
 
 
-def update_inc(inc_num, text: Optional[str] = None, end: Optional[str] = None):
+def update_inc(inc_num, text: Optional[str] = None, tks_num: Optional[str] = None, end: Optional[str] = None):
     if (text is not None) & (text != ''):
         if dict_of_incs[inc_num].description is None:
             dict_of_incs[inc_num].description = text
         else:
             dict_of_incs[inc_num].updates[get_now()] = text
+    if tks_num is not None:
+        dict_of_incs[inc_num].tks = tks_num
     if end is not None:
         dict_of_incs[inc_num].end_time = end
 
@@ -155,6 +160,8 @@ def print_inc(inc):
     result = ''
     if inc.description is not None:
         result += inc.description + '\n'
+    if inc.tks is not None:
+        result += 'ткс: ' + inc.tks + '\n'
     if inc.start_time is not None:
         result += 'начало: ' + inc.start_time + '\n'
     if inc.updates.__len__() != 0:
