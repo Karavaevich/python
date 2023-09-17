@@ -35,6 +35,7 @@ app = flask.Flask(__name__)
 
 last_inc_num = 0
 
+stable = True
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
