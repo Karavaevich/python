@@ -154,7 +154,7 @@ def print_inc(inc):
         result += inc.description + '\n'
     if inc.updates.__len__() != 0:
         for update in inc.updates:
-            result += 'дополн: ' + update + '\n'
+            result += 'дополн: ' + update + ' ' + inc.updates[update] + '\n'
     if inc.start_time is not None:
         result += 'начало: ' + inc.start_time + '\n'
     if inc.end_time is not None:
