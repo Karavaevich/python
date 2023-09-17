@@ -39,17 +39,17 @@ last_inc_num = 0
 
 
 class Inc:
-    def __init__(self, number: int, start_time: str, description: Optional[str] = None, update: Optional[str] = None,
-                 update_time: Optional[str] = None, end_time: Optional[str] = None):
+    def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates: Optional[dict] = (),
+                 end_time: Optional[str] = None):
         self.number: int = number
         self.description: str = description
-        self.update: str = update
+        self.updates: dict = updates
         self.start_time: str = start_time
-        self.update_time: str = update_time
         self.end_time: str = end_time
 
 
 dict_of_incs = dict()
+
 
 # Process webhook calls
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
@@ -61,6 +61,7 @@ def webhook():
         return ''
     else:
         flask.abort(403)
+
 
 @bot.message_handler(commands=['check'])
 def start(message):
@@ -142,7 +143,7 @@ def update_inc(inc_num, text: Optional[str] = None, end: Optional[str] = None):
         if dict_of_incs[inc_num].description is None:
             dict_of_incs[inc_num].description = text
         else:
-            dict_of_incs[inc_num].update = text
+            dict_of_incs[inc_num].updates[get_now()] = text
     if end is not None:
         dict_of_incs[inc_num].end_time = end
 
@@ -151,8 +152,9 @@ def print_inc(inc):
     result = ''
     if inc.description is not None:
         result += inc.description + '\n'
-    if inc.update is not None:
-        result += 'дополн: ' + inc.update + '\n'
+    if inc.updates.__len__() != 0:
+        for update in inc.updates:
+            result += 'дополн: ' + update + '\n'
     if inc.start_time is not None:
         result += 'начало: ' + inc.start_time + '\n'
     if inc.end_time is not None:
