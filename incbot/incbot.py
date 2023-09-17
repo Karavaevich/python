@@ -92,7 +92,6 @@ def get_user_text(message):
     try:
         if list_of_words_from_mes[0].lower() == 'инц':
             already_changed = False
-            global already_changed
             if list_of_words_from_mes.__len__() == 1:
                 new_inc = create_inc(start=str(get_now()))
                 bot.send_message(message.chat.id, print_inc(new_inc))
