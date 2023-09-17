@@ -1,5 +1,3 @@
-import trace
-import traceback
 from typing import Optional
 
 import telebot
@@ -50,7 +48,6 @@ class Inc:
 
 
 dict_of_incs = dict()
-already_changed = False
 
 
 # Process webhook calls
@@ -92,7 +89,6 @@ def get_user_text(message):
 
     try:
         if list_of_words_from_mes[0].lower() == 'инц':
-            global already_changed
             if list_of_words_from_mes.__len__() == 1:
                 new_inc = create_inc(start=str(get_now()))
                 bot.send_message(message.chat.id, print_inc(new_inc))
@@ -107,36 +103,26 @@ def get_user_text(message):
                     new_inc = create_inc(descr=des, start=str(get_now()))
                     bot.send_message(message.chat.id, print_inc(new_inc))
             elif check_inc_exist(int(list_of_words_from_mes[1])):
-                global already_changed
                 if list_of_words_from_mes.__len__() == 2:
                     bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
                 elif list_of_words_from_mes.__len__() > 2:
                     if list_of_words_from_mes[2].lower() == 'удалить':
-                        bot.send_message(message.chat.id,
-                                         'удалено событие:\n' + print_inc(dict_of_incs.pop(int(
-                                             list_of_words_from_mes[1]))))
-                        already_changed = True
-                    if (not already_changed) & (
-                            list_of_words_from_mes[2].lower() == 'ткс') & list_of_words_from_mes.__len__() > 3:
-                        if list_of_words_from_mes[3].isnumeric():
+                        bot.send_message(message.chat.id, 'удалено событие:\n' + print_inc(dict_of_incs.pop(int(list_of_words_from_mes[1]))))
+                    elif list_of_words_from_mes[2].lower() == 'ткс':
+                        if list_of_words_from_mes.__len__() > 3:
+                            if list_of_words_from_mes[3].isnumeric():
                             update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
-                            bot.send_message(message.chat.id,
-                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
-                            already_changed = True
-                    if not already_changed:
+                            bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                    else:
                         des = ''
                         for i in range(2, list_of_words_from_mes.__len__()):
                             des += str(list_of_words_from_mes[i]) + ' '
                         if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
-                            update_inc(inc_num=int(list_of_words_from_mes[1]),
-                                       text=des.removesuffix('ок '),
-                                       end=get_now())
-                            bot.send_message(message.chat.id,
-                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                            update_inc(inc_num=int(list_of_words_from_mes[1]), text=des.removesuffix('ок '), end=get_now())
+                            bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
                         else:
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
-                            bot.send_message(message.chat.id,
-                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                            bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
         elif list_of_words_from_mes[0].lower() == 'всеинц':
             bot.send_message(message.chat.id, str(print_dict_of_incs(dict_of_incs)))
         elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
@@ -148,7 +134,7 @@ def get_user_text(message):
 
 def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
     global last_inc_num
-    global dict_of_incs
+    global map_of_incs
     inc_num = last_inc_num + 1
     last_inc_num = inc_num
     new_inc = Inc(number=inc_num, description=descr, start_time=start, end_time=end)
