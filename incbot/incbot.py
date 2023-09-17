@@ -37,8 +37,10 @@ last_inc_num = 0
 
 
 class Inc:
-    def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates: Optional[dict] = {},
+    def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
                  tks: Optional[str] = None, end_time: Optional[str] = None):
+        if updates is None:
+            updates = {}
         self.number: int = number
         self.description: str = description
         self.updates: dict = updates
