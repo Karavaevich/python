@@ -143,7 +143,7 @@ def update_inc(inc_num, text: Optional[str] = None, end: Optional[str] = None):
         if dict_of_incs[inc_num].description is None:
             dict_of_incs[inc_num].description = text
         else:
-            dict_of_incs[inc_num].updates[get_now_short()] = text
+            dict_of_incs[inc_num].updates[get_now()] = text
     if end is not None:
         dict_of_incs[inc_num].end_time = end
 
@@ -152,11 +152,11 @@ def print_inc(inc):
     result = ''
     if inc.description is not None:
         result += inc.description + '\n'
+    if inc.start_time is not None:
+        result += 'начало: ' + inc.start_time + '\n'
     if inc.updates.__len__() != 0:
         for update in inc.updates:
             result += 'дополн: ' + update + ' ' + inc.updates[update] + '\n'
-    if inc.start_time is not None:
-        result += 'начало: ' + inc.start_time + '\n'
     if inc.end_time is not None:
         result += 'заверш: ' + inc.end_time + '\n'
     if inc.number is not None:
@@ -193,6 +193,7 @@ def check_inc_exist(num):
 
 def clear_inc():
     dict_of_incs.clear()
+
 
 if __name__ == '__main__':
     bot.remove_webhook()
