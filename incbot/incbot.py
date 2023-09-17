@@ -111,8 +111,8 @@ def get_user_text(message):
                     elif list_of_words_from_mes[2].lower() == 'ткс':
                         if list_of_words_from_mes.__len__() > 3:
                             if list_of_words_from_mes[3].isnumeric():
-                            update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
-                            bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                                update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
+                                bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
                     else:
                         des = ''
                         for i in range(2, list_of_words_from_mes.__len__()):
