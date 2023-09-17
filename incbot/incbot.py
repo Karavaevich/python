@@ -105,14 +105,13 @@ def get_user_text(message):
             elif check_inc_exist(int(list_of_words_from_mes[1])):
                 if list_of_words_from_mes.__len__() == 2:
                     bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
-                if list_of_words_from_mes.__len__() > 2:
-                    # if (list_of_words_from_mes.__len__() > 3) & (list_of_words_from_mes[2].lower() == 'ткс') & (list_of_words_from_mes[3].isnumeric()):
-                    #     update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
-                    #     bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
-                    if list_of_words_from_mes[2].lower() == 'удалить':
-                        bot.send_message(message.chat.id,
-                                         'удалено событие:\n' + print_inc(dict_of_incs.pop(int(
-                                             list_of_words_from_mes[1]))))
+                elif (list_of_words_from_mes.__len__() > 2) & (list_of_words_from_mes[2].lower() == 'удалить'):
+                    bot.send_message(message.chat.id,
+                                     'удалено событие:\n' + print_inc(dict_of_incs.pop(int(list_of_words_from_mes[1]))))
+                elif (list_of_words_from_mes.__len__() > 3) & (list_of_words_from_mes[2].lower() == 'ткс') & (list_of_words_from_mes[3].isnumeric()):
+                    update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
+                    bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                elif list_of_words_from_mes.__len__() > 2:
                     des = ''
                     for i in range(2, list_of_words_from_mes.__len__()):
                         des += str(list_of_words_from_mes[i]) + ' '
