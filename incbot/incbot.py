@@ -143,7 +143,7 @@ def update_inc(inc_num, text: Optional[str] = None, end: Optional[str] = None):
         if dict_of_incs[inc_num].description is None:
             dict_of_incs[inc_num].description = text
         else:
-            dict_of_incs[inc_num].updates[get_now()] = text
+            dict_of_incs[inc_num].updates[get_now_short()] = text
     if end is not None:
         dict_of_incs[inc_num].end_time = end
 
