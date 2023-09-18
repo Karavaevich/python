@@ -168,14 +168,14 @@ def print_inc(inc):
     if inc.tks is not None:
         result += 'ткс: 8 (800) 555-55-52,' + inc.tks + '#\n'
     if inc.start_time is not None:
-        result += 'начало: ' + inc.start_time + '\n'
+        result += 'нач: ' + inc.start_time + '\n'
     if inc.updates.__len__() != 0:
         for update in inc.updates:
-            result += 'дополн: ' + update + ' ' + inc.updates[update] + '\n'
+            result += 'доп: ' + update + ' ' + inc.updates[update] + '\n'
     if inc.end_time is not None:
-        result += 'заверш: ' + inc.end_time + '\n'
+        result += 'зав: ' + inc.end_time + '\n'
     if inc.number is not None:
-        result += 'админу: ' + str(inc.number) + '\n'
+        result += 'адм: ' + str(inc.number) + '\n'
     result += '\n'
     return result
 
