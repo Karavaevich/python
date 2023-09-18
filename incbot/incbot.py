@@ -154,7 +154,7 @@ def update_inc(inc_num, text: Optional[str] = None, tks_num: Optional[str] = Non
         if dict_of_incs[inc_num].description is None:
             dict_of_incs[inc_num].description = text
         else:
-            dict_of_incs[inc_num].updates[get_now()] = text
+            dict_of_incs[inc_num].updates[get_now_short()] = text
     if tks_num is not None:
         dict_of_incs[inc_num].tks = tks_num
     if end is not None:
@@ -186,7 +186,7 @@ def get_now():
 
 
 def get_now_short():
-    return datetime.now().strftime('%H:%M')
+    return datetime.now().strftime('%H:%M:%S')
 
 
 def print_dict_of_incs(dict_of_incs):
