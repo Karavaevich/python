@@ -122,10 +122,10 @@ def get_user_text(message):
                             des += str(list_of_words_from_mes[i]) + ' '
                         if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des.removesuffix('ок '), end=get_now())
-                            bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                            bot.send_message(message.chat.id, print_inc_short(get_inc(inc_num=int(list_of_words_from_mes[1]))))
                         else:
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
-                            bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                            bot.send_message(message.chat.id, print_inc_short(get_inc(inc_num=int(list_of_words_from_mes[1]))))
         elif list_of_words_from_mes[0].lower() == 'всеинц':
             bot.send_message(message.chat.id, str(print_dict_of_incs(dict_of_incs)))
         elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
@@ -179,6 +179,23 @@ def print_inc(inc):
     result += '\n'
     return result
 
+def print_inc_short(inc):
+    result = ''
+    if inc.description is not None:
+        result += inc.description + '\n'
+    if inc.tks is not None:
+        result += 'ткс: 8 (800) 555-55-52,' + inc.tks + '#\n'
+    if inc.start_time is not None:
+        result += 'начало: ' + inc.start_time + '\n'
+    if inc.updates.__len__() != 0:
+        last_key = inc.updates.keys()[-1]
+        result += last_key + ' ' + inc.updates[last_key] + '\n'
+    if inc.end_time is not None:
+        result += 'заверш: ' + inc.end_time + '\n'
+    if inc.number is not None:
+        result += 'админу: ' + str(inc.number) + '\n'
+    result += '\n'
+    return result
 
 def get_now():
     return datetime.now().strftime('%d.%m %H:%M')
