@@ -35,7 +35,7 @@ app = flask.Flask(__name__)
 
 last_inc_num = 0
 
-stable = False
+stable = True
 
 
 class Inc:
