@@ -35,7 +35,7 @@ app = flask.Flask(__name__)
 
 last_inc_num = 0
 
-stable = True
+stable = False
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
@@ -166,7 +166,7 @@ def print_inc(inc):
     if inc.description is not None:
         result += inc.description + '\n'
     if inc.tks is not None:
-        result += 'ткс: ' + inc.tks + '\n'
+        result += 'ткс: 8 (800) 555-55-52,' + inc.tks + '#\n'
     if inc.start_time is not None:
         result += 'начало: ' + inc.start_time + '\n'
     if inc.updates.__len__() != 0:
