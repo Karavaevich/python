@@ -94,7 +94,7 @@ def start(message):
 очистить события:
 “инц НОМЕР удалить” - удалить конкретное событие
 “всеинцудалить” - все события очистятся и счетчик сбросится
-    ''', parse_mode='html')
+    ''')
 
 @bot.message_handler(commands=['showbuttons'])
 def show_buttons(message):
