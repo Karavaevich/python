@@ -181,7 +181,7 @@ def print_inc(inc):
 
 
 def get_now():
-    return datetime.now().strftime('%d.%m %H:%M:%S')
+    return datetime.now().strftime('%d.%m %H:%M')
 
 
 def get_now_short():
