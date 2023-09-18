@@ -171,7 +171,7 @@ def print_inc(inc):
         result += 'нач: ' + inc.start_time + '\n'
     if inc.updates.__len__() != 0:
         for update in inc.updates:
-            result += 'доп: ' + update + ' ' + inc.updates[update] + '\n'
+            result += update + ' ' + inc.updates[update] + '\n'
     if inc.end_time is not None:
         result += 'зав: ' + inc.end_time + '\n'
     if inc.number is not None:
