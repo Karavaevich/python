@@ -129,7 +129,7 @@ def get_user_text(message):
                                        text=des.removesuffix('ок '),
                                        end=get_now())
                             bot.send_message(message.chat.id,
-                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True, some_text=message.chat.json_string))
+                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True, some_text=str(message.chat.json_string)))
                         else:
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
                             bot.send_message(message.chat.id,
