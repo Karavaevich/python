@@ -129,7 +129,7 @@ def get_user_text(message):
                                        text=des.removesuffix('ок '),
                                        end=get_now())
                             bot.send_message(message.chat.id,
-                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
+                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True, some_text=message.chat.json_string))
                         else:
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
                             bot.send_message(message.chat.id,
@@ -169,8 +169,9 @@ def update_inc(inc_num, text: Optional[str] = None, tks_num: Optional[str] = Non
         dict_of_incs[inc_num].end_time = end
 
 
-def print_inc(inc: Inc, short: bool = False):
+def print_inc(inc: Inc, short: bool = False, some_text: str = ''):
     result = ''
+    result += some_text + '\n'
     if inc.description is not None:
         result += inc.description + '\n'
     if inc.tks is not None:
