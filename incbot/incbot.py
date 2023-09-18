@@ -185,7 +185,7 @@ def get_now():
 
 
 def get_now_short():
-    return datetime.now().strftime('%H:%M')
+    return datetime.now().strftime('%H:%M:%S')
 
 
 def print_dict_of_incs(dict_of_incs):
