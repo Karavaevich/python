@@ -181,11 +181,11 @@ def print_inc(inc):
 
 
 def get_now():
-    return datetime.now().strftime('%d.%m %H:%M:%S')
+    return datetime.now().strftime('%d.%m %H:%M')
 
 
 def get_now_short():
-    return datetime.now().strftime('%H:%M:%S')
+    return datetime.now().strftime('%H:%M')
 
 
 def print_dict_of_incs(dict_of_incs):
