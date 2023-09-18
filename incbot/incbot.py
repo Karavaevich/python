@@ -220,6 +220,7 @@ def check_inc_exist(num):
 
 def clear_inc():
     dict_of_incs.clear()
+    last_inc_num = 0
 
 
 if __name__ == '__main__':
