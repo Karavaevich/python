@@ -197,8 +197,8 @@ def print_inc_short(inc):
     if inc.start_time is not None:
         result += 'начало: ' + inc.start_time + '\n'
     if inc.updates.__len__() != 0:
-        # last_key = inc.updates.keys()[-1]
-        result += list(inc.updates)[-1] + '\n'
+        last_key = list(inc.updates)[-1]
+        result += inc.updates[last_key] + '\n'
     if inc.end_time is not None:
         result += 'заверш: ' + inc.end_time + '\n'
     if inc.number is not None:
