@@ -219,6 +219,7 @@ def check_inc_exist(num):
 
 
 def clear_inc():
+    global last_inc_num
     dict_of_incs.clear()
     last_inc_num = 0
 
