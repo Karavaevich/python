@@ -129,11 +129,11 @@ def get_user_text(message):
                                        text=des.removesuffix('ок '),
                                        end=get_now())
                             bot.send_message(message.chat.id,
-                                             print_inc_short(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
                         else:
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
                             bot.send_message(message.chat.id,
-                                             print_inc_short(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
         elif list_of_words_from_mes[0].lower() == 'всеинц':
             bot.send_message(message.chat.id, str(print_dict_of_incs(dict_of_incs)))
         elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
@@ -169,7 +169,7 @@ def update_inc(inc_num, text: Optional[str] = None, tks_num: Optional[str] = Non
         dict_of_incs[inc_num].end_time = end
 
 
-def print_inc(inc):
+def print_inc(inc: Inc, short: bool = False):
     result = ''
     if inc.description is not None:
         result += inc.description + '\n'
@@ -178,27 +178,12 @@ def print_inc(inc):
     if inc.start_time is not None:
         result += 'начало: ' + inc.start_time + '\n'
     if inc.updates.__len__() != 0:
-        for update in inc.updates:
-            result += update + ' ' + inc.updates[update] + '\n'
-    if inc.end_time is not None:
-        result += 'заверш: ' + inc.end_time + '\n'
-    if inc.number is not None:
-        result += 'админу: ' + str(inc.number) + '\n'
-    result += '\n'
-    return result
-
-
-def print_inc_short(inc):
-    result = ''
-    if inc.description is not None:
-        result += inc.description + '\n'
-    if inc.tks is not None:
-        result += 'ткс: 8 (800) 555-55-52,' + inc.tks + '#\n'
-    if inc.start_time is not None:
-        result += 'начало: ' + inc.start_time + '\n'
-    if inc.updates.__len__() != 0:
-        last_key = list(inc.updates)[-1]
-        result += inc.updates[last_key] + '\n'
+        if short:
+            last_key = list(inc.updates)[-1]
+            result += 'статус: ' + inc.updates[last_key] + '\n'
+        else:
+            for update in inc.updates:
+                result += update + ' ' + inc.updates[update] + '\n'
     if inc.end_time is not None:
         result += 'заверш: ' + inc.end_time + '\n'
     if inc.number is not None:
