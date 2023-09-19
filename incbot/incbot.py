@@ -165,7 +165,7 @@ def get_user_text(message):
             clear_inc()
             bot.send_message(message.chat.id, 'все события удалены')
     except:
-        bot.send_message(message.chat.id, 'ошибка' + traceback.print_exc(limit=None, file=None, chain=True))
+        bot.send_message(message.chat.id, 'ошибка')
 
 
 def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
