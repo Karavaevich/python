@@ -1,3 +1,4 @@
+import traceback
 from typing import Optional
 
 import telebot
@@ -152,7 +153,7 @@ def get_user_text(message):
                         for i in range(2, list_of_words_from_mes.__len__()):
                             des += str(list_of_words_from_mes[i]) + ' '
                         if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
-                            update_inc(inc_num=int(list_of_words_from_mes[1]), text=des.removesuffix('ок '), tks_num=None, end=get_now())
+                            update_inc(inc_num=int(list_of_words_from_mes[1]), text=des.removesuffix('ок '), end=get_now())
                             bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
                         else:
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
@@ -164,7 +165,7 @@ def get_user_text(message):
             clear_inc()
             bot.send_message(message.chat.id, 'все события удалены')
     except:
-        bot.send_message(message.chat.id, 'ошибка')
+        bot.send_message(message.chat.id, 'ошибка' + traceback.print_exc(limit=None, file=None, chain=True))
 
 
 def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
