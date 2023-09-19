@@ -152,8 +152,7 @@ def get_user_text(message):
                         for i in range(2, list_of_words_from_mes.__len__()):
                             des += str(list_of_words_from_mes[i]) + ' '
                         if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
-                            upd = des.removesuffix('ок ')
-                            update_inc(inc_num=int(list_of_words_from_mes[1]), text=upd, end=get_now())
+                            update_inc(inc_num=int(list_of_words_from_mes[1]), text=des.removesuffix('ок '), tks_num=None, end=get_now())
                             bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
                         else:
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
