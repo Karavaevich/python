@@ -16,7 +16,7 @@ from datetime import datetime
 # When asked for "Common Name (e.g. server FQDN or YOUR name)" you should reply
 # with the same value in you put in WEBHOOK_HOST
 
-API_TOKEN = '6402634448:AAGq1MQC1OtiXPxW9ybdWiCLrG_pBAQaEQI'
+API_TOKEN = '6402634448:AAGBaX0Iqn5U0EFyQrN62posnLWri7p7rPo'
 WEBHOOK_HOST = '94.139.255.242'
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '127.0.0.1'  # In some VPS you may need to put here the IP addr
