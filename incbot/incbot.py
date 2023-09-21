@@ -36,8 +36,6 @@ last_inc_num = 0
 stable = False
 
 need_delete_commands = False
-dryrun.set(True)
-
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
@@ -152,7 +150,7 @@ def get_user_text(message):
                         if list_of_words_from_mes.__len__() > 3:
                             if list_of_words_from_mes[3].isnumeric():
                                 update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
-                                reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                                reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
                     else:
                         des = ''
                         for i in range(2, list_of_words_from_mes.__len__()):
@@ -182,6 +180,7 @@ def get_user_text(message):
 
 @dryrun()
 def can_delete(chat_id: str, message_id: int) -> bool:
+    dryrun.set(True)
     check_result = bot.delete_message(chat_id=chat_id, message_id=message_id)
     return check_result
 
