@@ -64,6 +64,11 @@ def webhook():
         flask.abort(403)
 
 
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.send_message(message.chat.id, 'привет\n/check\n/help')
+
+
 @bot.message_handler(commands=['check'])
 def start(message):
     try:
