@@ -65,7 +65,7 @@ def webhook():
 
 @bot.message_handler(commands=['check'])
 def start(message):
-    bot.send_message(message.chat.id, '<b>тут</b>', parse_mode='html')
+    bot.send_message(message.chat.id, f'{message.message_id} <b>тут</b>', parse_mode='html')
 
 @bot.message_handler(commands=['help'])
 def start(message):
