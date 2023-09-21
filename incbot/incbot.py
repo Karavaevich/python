@@ -64,12 +64,6 @@ def webhook():
         flask.abort(403)
 
 
-@bot.chat_join_request_handler()
-def process_request(join_request):
-    if join_request.chat.id != '-1001963266949':
-        bot.decline_chat_join_request(join_request.chat.id, join_request.chat.from_user)
-
-
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 'привет\n/check\n/help')
@@ -81,7 +75,7 @@ def start(message):
         bot.delete_message(message.chat.id, message.message_id)
         bot.send_message(message.chat.id, 'все ок')
     except telebot.apihelper.ApiTelegramException:
-        bot.send_message(message.chat.id, 'я тут, но не могу удалять сообщения')
+        bot.send_message(message.chat.id, 'я тут, но не могу удалять команды чтобы не захламлять чат')
 
 
 @bot.message_handler(commands=['help'])
