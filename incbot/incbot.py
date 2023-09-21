@@ -34,7 +34,7 @@ last_inc_num = 0
 
 stable = False
 
-need_delete_message = True
+need_delete_message = False
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
@@ -163,6 +163,10 @@ def get_user_text(message):
         elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
             clear_inc()
             bot.send_message(message.chat.id, 'все события удалены')
+        elif list_of_words_from_mes[0].lower() == 'удалятьсообщения':
+            set_need_delete_message(True)
+        elif list_of_words_from_mes[0].lower() == 'неудалятьсообщения':
+            set_need_delete_message(False)
     except:
         bot.send_message(message.chat.id, 'ошибка')
 
@@ -234,6 +238,9 @@ def print_dict_of_incs(dict_of_incs):
         result = 'событий нет'
     return result
 
+def set_need_delete_message(flag: bool):
+    global need_delete_message
+    need_delete_message = flag
 
 def check_inc_exist(num):
     if num in dict_of_incs:
