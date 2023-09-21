@@ -68,8 +68,6 @@ def webhook():
 @bot.message_handler(commands=['check'])
 def start(message):
     reply(chat_id=message.chat.id, message_id=message.message_id, text='тут')
-    if need_delete_commands:
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @bot.message_handler(commands=['help'])
@@ -99,8 +97,6 @@ def start(message):
 “инц НОМЕР удалить” - удалить конкретное событие
 “всеинцудалить” - все события очистятся и счетчик сбросится
     ''')
-    if need_delete_commands:
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @bot.message_handler(commands=['showbuttons'])
@@ -110,16 +106,12 @@ def show_buttons(message):
     two = types.KeyboardButton('всеинц')
     markup.add(one, two, row_width=2)
     bot.send_message(message.chat.id, 'кнопки тут', reply_markup=markup)
-    if need_delete_commands:
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @bot.message_handler(commands=['removebuttons'])
 def remove_buttons(message):
     markup = types.ReplyKeyboardRemove()
     bot.send_message(message.chat.id, 'кнопок нет', reply_markup=markup)
-    if need_delete_commands:
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @bot.message_handler()
@@ -132,31 +124,29 @@ def get_user_text(message):
         if list_of_words_from_mes[0].lower() == 'инц':
             if list_of_words_from_mes.__len__() == 1:
                 new_inc = create_inc(start=str(get_now()))
-                bot.send_message(message.chat.id, print_inc(new_inc))
+                reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
             elif not list_of_words_from_mes[1].isnumeric():
                 des = ''
                 for i in range(1, list_of_words_from_mes.__len__()):
                     des += str(list_of_words_from_mes[i]) + ' '
                 if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
                     new_inc = create_inc(descr=des.removesuffix('ок '), start=str(get_now()), end=str(get_now()))
-                    bot.send_message(message.chat.id, print_inc(new_inc))
+                    reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
                 else:
                     new_inc = create_inc(descr=des, start=str(get_now()))
-                    bot.send_message(message.chat.id, print_inc(new_inc))
+                    reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
             elif check_inc_exist(int(list_of_words_from_mes[1])):
                 if list_of_words_from_mes.__len__() == 2:
-                    bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                    reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
                 elif list_of_words_from_mes.__len__() > 2:
                     if list_of_words_from_mes[2].lower() == 'удалить':
-                        bot.send_message(message.chat.id,
-                                         'удалено событие:\n' + print_inc(dict_of_incs.pop(int(
+                        reply(chat_id=chat_id_to_reply, message_id=message.message_id, text='удалено событие:\n' + print_inc(dict_of_incs.pop(int(
                                              list_of_words_from_mes[1]))))
                     elif list_of_words_from_mes[2].lower() == 'ткс':
                         if list_of_words_from_mes.__len__() > 3:
                             if list_of_words_from_mes[3].isnumeric():
                                 update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
-                                bot.send_message(message.chat.id,
-                                                 print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                                reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
                     else:
                         des = ''
                         for i in range(2, list_of_words_from_mes.__len__()):
@@ -165,27 +155,23 @@ def get_user_text(message):
                             update_inc(inc_num=int(list_of_words_from_mes[1]),
                                        text=des.removesuffix('ок '),
                                        end=get_now())
-                            bot.send_message(message.chat.id,
-                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
+                            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
                         else:
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
-                            bot.send_message(message.chat.id,
-                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
+                            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
         elif list_of_words_from_mes[0].lower() == 'всеинц':
-            bot.send_message(message.chat.id, str(print_dict_of_incs(dict_of_incs)))
+            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs(dict_of_incs)))
         elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
             clear_inc()
-            bot.send_message(message.chat.id, 'все события удалены')
+            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text='все события удалены')
         elif list_of_words_from_mes[0].lower() == 'удалятькоманды':
             set_need_delete_commands(True)
-            bot.send_message(message.chat.id, 'команды будут удаляться')
+            bot.send_message(chat_id_to_reply, 'команды будут удаляться')
         elif list_of_words_from_mes[0].lower() == 'неудалятькоманды':
             set_need_delete_commands(False)
-            bot.send_message(message.chat.id, 'команды не будут удаляться')
+            bot.send_message(chat_id_to_reply, 'команды не будут удаляться')
     except:
-        bot.send_message(message.chat.id, 'ошибка')
-    if need_delete_commands:
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.send_message(chat_id_to_reply, 'ошибка')
 
 
 def reply(chat_id: str, message_id: int, text: str):
