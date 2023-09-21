@@ -64,6 +64,12 @@ def webhook():
         flask.abort(403)
 
 
+@bot.chat_join_request_handler()
+def process_request(join_request):
+    if join_request.chat.id != '-1001963266949':
+        bot.decline_chat_join_request(join_request.chat.id, join_request.chat.from_user)
+
+
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 'привет\n/check\n/help')
