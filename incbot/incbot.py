@@ -30,11 +30,9 @@ telebot.logger.setLevel(logging.DEBUG)
 bot = telebot.TeleBot(API_TOKEN)
 app = flask.Flask(__name__)
 
+stable = True
+
 last_inc_num = 0
-max_message_length = 4096
-
-stable = False
-
 need_delete_commands = False
 
 
