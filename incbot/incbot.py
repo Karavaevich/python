@@ -36,6 +36,7 @@ last_inc_num = 0
 stable = False
 
 need_delete_commands = False
+dryrun.set(True)
 
 
 class Inc:
@@ -64,12 +65,6 @@ def webhook():
         return ''
     else:
         flask.abort(403)
-
-
-@dryrun()
-def can_delete(chat_id: str, message_id: int) -> bool:
-    check_result = bot.delete_message(chat_id=chat_id, message_id=message_id)
-    return check_result
 
 
 @bot.message_handler(commands=['check'])
@@ -185,6 +180,10 @@ def get_user_text(message):
         bot.send_message(chat_id_to_reply, 'ошибка')
 
 
+@dryrun()
+def can_delete(chat_id: str, message_id: int) -> bool:
+    check_result = bot.delete_message(chat_id=chat_id, message_id=message_id)
+    return check_result
 
 
 def reply(chat_id: str, message_id: int, text: str):
