@@ -75,7 +75,8 @@ def start(message):
         bot.delete_message(message.chat.id, message.message_id)
         bot.send_message(message.chat.id, 'все ок')
     except telebot.apihelper.ApiTelegramException:
-        bot.send_message(message.chat.id, 'я тут, но не могу удалять команды чтобы не захламлять чат')
+        bot.send_message(message.chat.id, 'я тут, но не могу удалять команды чтобы не захламлять чат\n+проверь что я '
+                                          'админ')
 
 
 @bot.message_handler(commands=['help'])
