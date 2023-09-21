@@ -36,6 +36,7 @@ stable = False
 
 need_delete_commands = False
 
+
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
                  tks: Optional[str] = None, end_time: Optional[str] = None):
@@ -66,9 +67,10 @@ def webhook():
 
 @bot.message_handler(commands=['check'])
 def start(message):
-    bot.send_message(message.chat.id, '<b>тут</b>', parse_mode='html')
+    reply(chat_id=message.chat.id, message_id=message.message_id, text='тут')
     if need_delete_commands:
         bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
 
 @bot.message_handler(commands=['help'])
 def start(message):
@@ -100,6 +102,7 @@ def start(message):
     if need_delete_commands:
         bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
+
 @bot.message_handler(commands=['showbuttons'])
 def show_buttons(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -121,6 +124,7 @@ def remove_buttons(message):
 
 @bot.message_handler()
 def get_user_text(message):
+    chat_id_to_reply = message.chat.id
     mes: str = message.text
     list_of_words_from_mes = mes.split(' ')
 
@@ -158,8 +162,11 @@ def get_user_text(message):
                         for i in range(2, list_of_words_from_mes.__len__()):
                             des += str(list_of_words_from_mes[i]) + ' '
                         if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
-                            update_inc(inc_num=int(list_of_words_from_mes[1]), text=des.removesuffix('ок '), end=get_now())
-                            bot.send_message(message.chat.id, print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
+                            update_inc(inc_num=int(list_of_words_from_mes[1]),
+                                       text=des.removesuffix('ок '),
+                                       end=get_now())
+                            bot.send_message(message.chat.id,
+                                             print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
                         else:
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
                             bot.send_message(message.chat.id,
@@ -179,6 +186,12 @@ def get_user_text(message):
         bot.send_message(message.chat.id, 'ошибка')
     if need_delete_commands:
         bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
+
+def reply(chat_id: str, message_id: int, text: str):
+    bot.send_message(chat_id, text)
+    if need_delete_commands:
+        bot.delete_message(chat_id=chat_id, message_id=message_id)
 
 
 def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
