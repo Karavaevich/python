@@ -66,6 +66,12 @@ def webhook():
         flask.abort(403)
 
 
+@dryrun()
+def can_delete(chat_id: str, message_id: int) -> bool:
+    check_result = bot.delete_message(chat_id=chat_id, message_id=message_id)
+    return check_result
+
+
 @bot.message_handler(commands=['check'])
 def start(message):
     bot_can_delete = can_delete(chat_id=message.chat.id, message_id=message.message_id)
@@ -178,10 +184,7 @@ def get_user_text(message):
     except:
         bot.send_message(chat_id_to_reply, 'ошибка')
 
-@dryrun()
-def can_delete(chat_id: str, message_id: int) -> bool:
-    check_result = bot.delete_message(chat_id=chat_id, message_id=message_id)
-    return check_result
+
 
 
 def reply(chat_id: str, message_id: int, text: str):
