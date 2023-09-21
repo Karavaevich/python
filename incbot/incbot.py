@@ -7,7 +7,6 @@ import time
 import logging
 from telebot import types
 from datetime import datetime
-from dryrun import dryrun
 
 # Quick'n'dirty SSL certificate generation:
 #
@@ -37,7 +36,7 @@ max_message_length = 4096
 stable = False
 
 need_delete_commands = False
-dryrun.set(True)
+
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
@@ -69,10 +68,10 @@ def webhook():
 
 @bot.message_handler(commands=['check'])
 def start(message):
-    bot_can_delete = can_delete(chat_id=message.chat.id, message_id=message.message_id)
-    if bot_can_delete:
+    try:
+        bot.delete_message(message.chat.id, message.message_id)
         bot.send_message(message.chat.id, 'все ок')
-    else:
+    except:
         bot.send_message(message.chat.id, 'я тут, но не могу удалять сообщения')
 
 
@@ -143,16 +142,22 @@ def get_user_text(message):
                     reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
             elif check_inc_exist(int(list_of_words_from_mes[1])):
                 if list_of_words_from_mes.__len__() == 2:
-                    reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                    reply(chat_id=chat_id_to_reply,
+                          message_id=message.message_id,
+                          text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
                 elif list_of_words_from_mes.__len__() > 2:
                     if list_of_words_from_mes[2].lower() == 'удалить':
-                        reply(chat_id=chat_id_to_reply, message_id=message.message_id, text='удалено событие:\n' + print_inc(dict_of_incs.pop(int(
-                                             list_of_words_from_mes[1]))))
+                        reply(chat_id=chat_id_to_reply,
+                              message_id=message.message_id,
+                              text='удалено событие:\n' + print_inc(dict_of_incs.pop(int(
+                                  list_of_words_from_mes[1]))))
                     elif list_of_words_from_mes[2].lower() == 'ткс':
                         if list_of_words_from_mes.__len__() > 3:
                             if list_of_words_from_mes[3].isnumeric():
                                 update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
-                                reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
+                                reply(chat_id=chat_id_to_reply,
+                                      message_id=message.message_id,
+                                      text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
                     else:
                         des = ''
                         for i in range(2, list_of_words_from_mes.__len__()):
@@ -161,10 +166,14 @@ def get_user_text(message):
                             update_inc(inc_num=int(list_of_words_from_mes[1]),
                                        text=des.removesuffix('ок '),
                                        end=get_now())
-                            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
+                            reply(chat_id=chat_id_to_reply,
+                                  message_id=message.message_id,
+                                  text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
                         else:
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
-                            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
+                            reply(chat_id=chat_id_to_reply,
+                                  message_id=message.message_id,
+                                  text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
         elif list_of_words_from_mes[0].lower() == 'всеинц':
             reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs()))
         elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
@@ -178,15 +187,6 @@ def get_user_text(message):
             bot.send_message(chat_id_to_reply, 'команды не будут удаляться')
     except:
         bot.send_message(chat_id_to_reply, 'ошибка')
-    else:
-        if print_dict_of_incs().__len__() > max_message_length:
-            bot.send_message(chat_id_to_reply, 'превышен лимит инц для вывода')
-
-
-@dryrun(return_value=True)
-def can_delete(chat_id: str, message_id: int) -> bool:
-    check_result = bot.delete_message(chat_id=chat_id, message_id=message_id)
-    return check_result
 
 
 def reply(chat_id: str, message_id: int, text: str):
