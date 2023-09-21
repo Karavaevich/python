@@ -71,7 +71,7 @@ def start(message):
     try:
         bot.delete_message(message.chat.id, message.message_id)
         bot.send_message(message.chat.id, 'все ок')
-    except:
+    except telebot.apihelper.ApiTelegramException:
         bot.send_message(message.chat.id, 'я тут, но не могу удалять сообщения')
 
 
