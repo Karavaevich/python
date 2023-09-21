@@ -67,7 +67,11 @@ def webhook():
 
 @bot.message_handler(commands=['check'])
 def start(message):
-    bot.send_message(message.chat.id, 'тут')
+    try:
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.send_message(message.chat.id, 'все ок')
+    except:
+        bot.send_message(message.chat.id, 'не ок')
 
 
 @bot.message_handler(commands=['help'])
