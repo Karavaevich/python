@@ -36,6 +36,8 @@ last_inc_num = 0
 stable = False
 
 need_delete_commands = False
+dryrun.set(True)
+
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
@@ -178,9 +180,8 @@ def get_user_text(message):
         bot.send_message(chat_id_to_reply, 'ошибка')
 
 
-@dryrun()
+@dryrun(return_value=True)
 def can_delete(chat_id: str, message_id: int) -> bool:
-    dryrun.set(True)
     check_result = bot.delete_message(chat_id=chat_id, message_id=message_id)
     return check_result
 
