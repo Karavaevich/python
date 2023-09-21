@@ -34,6 +34,7 @@ last_inc_num = 0
 
 stable = False
 
+need_delete_message = True
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
@@ -65,8 +66,9 @@ def webhook():
 
 @bot.message_handler(commands=['check'])
 def start(message):
-    bot.delete_message(message.chat.id, message.message_id, timeout=5)
-    bot.send_message(message.chat.id, f'{message.message_id} <b>тут</b>', parse_mode='html')
+    bot.send_message(message.chat.id, '<b>тут</b>', parse_mode='html')
+    if need_delete_message:
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 @bot.message_handler(commands=['help'])
 def start(message):
