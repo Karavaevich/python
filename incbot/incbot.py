@@ -97,6 +97,8 @@ def start(message):
 “инц НОМЕР удалить” - удалить конкретное событие
 “всеинцудалить” - все события очистятся и счетчик сбросится
     ''')
+    if need_delete_commands:
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 @bot.message_handler(commands=['showbuttons'])
 def show_buttons(message):
@@ -105,12 +107,16 @@ def show_buttons(message):
     two = types.KeyboardButton('всеинц')
     markup.add(one, two, row_width=2)
     bot.send_message(message.chat.id, 'кнопки тут', reply_markup=markup)
+    if need_delete_commands:
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @bot.message_handler(commands=['removebuttons'])
 def remove_buttons(message):
     markup = types.ReplyKeyboardRemove()
     bot.send_message(message.chat.id, 'кнопок нет', reply_markup=markup)
+    if need_delete_commands:
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @bot.message_handler()
@@ -171,6 +177,8 @@ def get_user_text(message):
             bot.send_message(message.chat.id, 'команды не будут удаляться')
     except:
         bot.send_message(message.chat.id, 'ошибка')
+    if need_delete_commands:
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
