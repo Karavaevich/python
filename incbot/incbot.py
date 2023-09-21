@@ -32,12 +32,12 @@ bot = telebot.TeleBot(API_TOKEN)
 app = flask.Flask(__name__)
 
 last_inc_num = 0
+max_message_length = 4096
 
 stable = False
 
 need_delete_commands = False
 dryrun.set(True)
-
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
@@ -166,7 +166,7 @@ def get_user_text(message):
                             update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
                             reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
         elif list_of_words_from_mes[0].lower() == 'всеинц':
-            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs(dict_of_incs)))
+            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs()))
         elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
             clear_inc()
             reply(chat_id=chat_id_to_reply, message_id=message.message_id, text='все события удалены')
@@ -178,6 +178,9 @@ def get_user_text(message):
             bot.send_message(chat_id_to_reply, 'команды не будут удаляться')
     except:
         bot.send_message(chat_id_to_reply, 'ошибка')
+    else:
+        if print_dict_of_incs().__len__() > max_message_length:
+            bot.send_message(chat_id_to_reply, 'превышен лимит инц для вывода')
 
 
 @dryrun(return_value=True)
@@ -249,7 +252,7 @@ def get_now_short():
     return datetime.now().strftime('%H:%M:%S')
 
 
-def print_dict_of_incs(dict_of_incs):
+def print_dict_of_incs():
     result = ''
     if dict_of_incs.__len__() != 0:
         result = 'cписок: \n\n'
