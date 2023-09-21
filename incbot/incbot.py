@@ -66,11 +66,12 @@ def webhook():
 
 @bot.message_handler(commands=['check'])
 def start(message):
-    bot.send_message(message.chat.id, '/check2</')
+    # bot.send_message(message.chat.id, '<b>/check2</b>', parse_mode='html')
+    bot.send_message(message.chat.id, '123')
     if need_delete_message:
         bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
-@bot.message_handler(commands=['/check2'])
+@bot.message_handler(commands=['/123'])
 def start(message):
     bot.send_message(message.chat.id, '<b>не тут</b>', parse_mode='html')
     if need_delete_message:
