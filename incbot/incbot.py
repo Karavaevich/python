@@ -199,7 +199,7 @@ def get_user_text(message):
     except:
         bot.send_message(chat_id_to_reply, 'ошибка')
 
-    if message.reply_to_message_id.message_id == 1023:
+    if message.reply_to_message.message_id == 1023:
         bot.send_message(chat_id_to_reply, "catched!", reply_to_message_id=message.message_id)
 
 
