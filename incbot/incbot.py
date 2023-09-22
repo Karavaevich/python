@@ -41,6 +41,7 @@ stable = True
 
 last_inc_num = 0
 need_delete_commands = True
+need_delete_related_messages_after_closing = True
 
 
 class Inc:
@@ -170,7 +171,10 @@ def get_user_text(message):
                 update_inc(inc_num=inc_num_from_command, text=message_from_user.removesuffix('ок'), end=get_now())
                 add_mes_id_to_inc = reply(chat_id=chat_id_to_reply,
                                           message_id=message.message_id,
-                                          text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
+                                          text='событие закрыто:\n' + print_inc(get_inc(inc_num=inc_num_from_command)))
+
+                if need_delete_related_messages_after_closing:
+                    delete_related_messages(inc_num_from_command)
 
             else:
                 update_inc(inc_num=inc_num_from_command, text=message_from_user)
@@ -225,6 +229,11 @@ def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Op
     new_inc = Inc(number=inc_num, description=descr, start_time=start, end_time=end)
     dict_of_incs[inc_num] = new_inc
     return new_inc
+
+
+def delete_related_messages(chat_id: str, inc_num: int):
+    for bot_message in get_inc(inc_num=inc_num).messages:
+        bot.delete_message(chat_id=chat_id, message_id=bot_message)
 
 
 def get_inc(inc_num: int) -> Inc:
