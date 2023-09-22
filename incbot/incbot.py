@@ -40,7 +40,7 @@ app = flask.Flask(__name__)
 stable = True
 
 last_inc_num = 0
-need_delete_commands = False
+need_delete_commands = True
 
 
 class Inc:
