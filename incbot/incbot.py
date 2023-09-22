@@ -199,7 +199,7 @@ def get_user_text(message):
     except:
         bot.send_message(chat_id_to_reply, 'ошибка')
 
-    bot.send_message(chat_id_to_reply, message.message_id)
+    bot.send_message(chat_id_to_reply, message.message_id, reply_to_message_id=1023)
 
 
 def reply(chat_id: str, message_id: int, text: str):
