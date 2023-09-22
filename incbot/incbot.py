@@ -244,10 +244,10 @@ def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Op
 
 
 def delete_related_messages(chat_id: str, inc_num: int):
-    messages = get_inc(inc_num=inc_num).messages
-    for bot_message in messages:
+    bot_messages = get_inc(inc_num=inc_num).messages
+    for bot_message in bot_messages:
         bot.delete_message(chat_id=chat_id, message_id=bot_message)
-        messages.pop(bot_message - 1)
+    bot_messages.clear()
 
 
 def get_inc(inc_num: int) -> Inc:
