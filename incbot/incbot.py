@@ -146,7 +146,7 @@ def get_user_text(message):
         inc: Inc = get_inc(inc_by_message(message.reply_to_message.message_id))
         add_mes_id = reply(chat_id=chat_id_to_reply,
                            message_id=message.message_id,
-                           text='caught update command')
+                           text='caught update command for inc' + str(inc.number))
         inc.messages.append(add_mes_id)
 
     if list_of_words_from_mes[0].lower() == 'инц':
