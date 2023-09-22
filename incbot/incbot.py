@@ -241,8 +241,11 @@ def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Op
 
 
 def delete_related_messages(chat_id: str, inc_num: int):
-    for bot_message in get_inc(inc_num=inc_num).messages:
-        bot.delete_message(chat_id=chat_id, message_id=bot_message)
+    try:
+        for bot_message in get_inc(inc_num=inc_num).messages:
+            bot.delete_message(chat_id=chat_id, message_id=bot_message)
+    except telebot.apihelper.ApiTelegramException:
+        bot.send_message(chat_id=chat_id, text='ошибка при удалении')
 
 
 def get_inc(inc_num: int) -> Inc:
