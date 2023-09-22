@@ -154,7 +154,7 @@ def get_user_text(message):
                 new_inc.messages.append(add_mes_id_to_inc)
 
     elif is_update_command(message):
-        inc_num_from_command = message.reply_to_message.message_id
+        inc_num_from_command = inc_by_message(message.reply_to_message.message_id)
         add_mes_id_to_inc = None
 
         if message_from_user.lower() == 'удалить':
@@ -197,6 +197,7 @@ def get_user_text(message):
     elif message_from_user.lower() == 'неудалятькоманды':
         set_need_delete_commands(False)
         bot.send_message(chat_id_to_reply, 'команды не будут удаляться')
+
 
 def is_tks_update_command(lst: list[str]):
     if lst[0].lower() == 'ткс':
