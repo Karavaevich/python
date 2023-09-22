@@ -41,7 +41,7 @@ stable = True
 
 last_inc_num = 0
 need_delete_commands = False
-
+json_string = ''
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
@@ -63,6 +63,7 @@ dict_of_incs = dict()
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
 def webhook():
     if flask.request.headers.get('content-type') == 'application/json':
+        global json_string
         json_string = flask.request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
         bot.process_new_updates([update])
@@ -199,8 +200,7 @@ def get_user_text(message):
     except:
         bot.send_message(chat_id_to_reply, 'ошибка')
 
-    if message.reply_to_message_id == 1023:
-        bot.send_message(chat_id_to_reply, "catched!", reply_to_message_id=message.message_id)
+    bot.send_message(chat_id_to_reply, json_string)
 
 
 def reply(chat_id: str, message_id: int, text: str):
