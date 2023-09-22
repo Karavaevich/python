@@ -158,6 +158,7 @@ def get_user_text(message):
         if message_from_user.lower() == 'удалить':
             delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
             dict_of_incs.pop(inc_num_from_command)
+            bot.delete_message(chat_id=current_chat_id, message_id=message_from_user)
 
         elif is_tks_update_command(list_of_words_from_mes):
             update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1])
