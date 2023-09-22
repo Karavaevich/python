@@ -211,6 +211,7 @@ def get_user_text(message):
         bot.send_message(current_chat_id, 'предыдущие собщения бота по событию при его закрытии/удалении не будут '
                                           'удаляться')
 
+
 def is_tks_update_command(lst: list[str]) -> bool:
     if lst[0].lower() == 'ткс':
         if lst.__len__() == 2:
@@ -243,12 +244,10 @@ def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Op
 
 
 def delete_related_messages(chat_id: str, inc_num: int):
-    try:
-        for bot_message in get_inc(inc_num=inc_num).messages:
-            bot.delete_message(chat_id=chat_id, message_id=bot_message)
-    except telebot.apihelper.ApiTelegramException:
-        pass
-        # bot.send_message(chat_id=chat_id, text='ошибка при удалении')
+    messages = get_inc(inc_num=inc_num).messages
+    for bot_message in messages:
+        bot.delete_message(chat_id=chat_id, message_id=bot_message)
+        messages.pop(bot_message)
 
 
 def get_inc(inc_num: int) -> Inc:
