@@ -117,20 +117,20 @@ def start(message):
 “всеинцудалить” - все события очистятся и счетчик сбросится
     ''')
 
-
-@bot.message_handler(commands=['showbuttons'])
-def show_buttons(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    one = types.KeyboardButton('инц')
-    two = types.KeyboardButton('всеинц')
-    markup.add(one, two, row_width=2)
-    bot.send_message(message.chat.id, 'кнопки тут', reply_markup=markup)
-
-
-@bot.message_handler(commands=['removebuttons'])
-def remove_buttons(message):
-    markup = types.ReplyKeyboardRemove()
-    bot.send_message(message.chat.id, 'кнопок нет', reply_markup=markup)
+#
+# @bot.message_handler(commands=['showbuttons'])
+# def show_buttons(message):
+#     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+#     one = types.KeyboardButton('инц')
+#     two = types.KeyboardButton('всеинц')
+#     markup.add(one, two, row_width=2)
+#     bot.send_message(message.chat.id, 'кнопки тут', reply_markup=markup)
+#
+#
+# @bot.message_handler(commands=['removebuttons'])
+# def remove_buttons(message):
+#     markup = types.ReplyKeyboardRemove()
+#     bot.send_message(message.chat.id, 'кнопок нет', reply_markup=markup)
 
 
 @bot.message_handler()
@@ -141,13 +141,12 @@ def get_user_text(message):
 
     # try:
 
-    if message.reply_to_message is not None:
-        if inc_by_message(message.reply_to_message.message_id) > 0:
-            inc: Inc = get_inc(inc_by_message(message.reply_to_message.message_id))
-            add_mes_id = reply(chat_id=chat_id_to_reply,
+    if is_command(message):
+        inc: Inc = get_inc(inc_by_message(message.reply_to_message.message_id))
+        add_mes_id = reply(chat_id=chat_id_to_reply,
                                message_id=message.message_id,
                                text=print_inc(inc))
-            inc.messages.append(add_mes_id)
+        inc.messages.append(add_mes_id)
 
     if list_of_words_from_mes[0].lower() == 'инц':
         if list_of_words_from_mes.__len__() == 1:
@@ -214,6 +213,13 @@ def get_user_text(message):
     #     bot.send_message(chat_id_to_reply, 'ошибка')
 
     # bot.send_message(chat_id_to_reply, message.message_id)
+
+
+def is_command(message: telebot.types.Message) -> bool:
+    if message.reply_to_message is not None:
+        if inc_by_message(message.reply_to_message.message_id) > 0:
+            return True
+        return False
 
 
 def reply(chat_id: str, message_id: int, text: str) -> int:
