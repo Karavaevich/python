@@ -123,6 +123,7 @@ def start(message):
 def get_user_text(message):
     current_chat_id = message.chat.id
     message_from_user: str = message.text
+    message_id_from_user = message.message_id
     list_of_words_from_mes = message_from_user.split(' ')
 
     # try:
@@ -131,7 +132,7 @@ def get_user_text(message):
 
         if list_of_words_from_mes.__len__() == 1:
             new_inc = create_inc(start=str(get_now()))
-            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message.message_id, text=print_inc(new_inc))
+            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user, text=print_inc(new_inc))
             new_inc.messages.append(add_mes_id_to_inc)
 
         else:
@@ -140,14 +141,14 @@ def get_user_text(message):
             if des.lower().endswith('ок'):
                 new_inc = create_inc(descr=des.removesuffix('ок'), start=str(get_now()), end=str(get_now()))
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
-                                          message_id=message.message_id,
+                                          message_id=message_id_from_user,
                                           text=print_inc(new_inc))
                 new_inc.messages.append(add_mes_id_to_inc)
 
             else:
                 new_inc = create_inc(descr=des, start=str(get_now()))
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
-                                          message_id=message.message_id,
+                                          message_id=message_id_from_user,
                                           text=print_inc(new_inc))
                 new_inc.messages.append(add_mes_id_to_inc)
 
@@ -158,11 +159,11 @@ def get_user_text(message):
         if message_from_user.lower() == 'удалить':
             delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
             dict_of_incs.pop(inc_num_from_command)
-            bot.delete_message(chat_id=current_chat_id, message_id=message_from_user)
+            bot.delete_message(chat_id=current_chat_id, message_id=message_id_from_user)
 
         elif is_tks_update_command(list_of_words_from_mes):
             update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1])
-            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message.message_id,
+            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user,
                                       text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
 
         else:
@@ -170,7 +171,7 @@ def get_user_text(message):
             if message_from_user.lower().endswith('ок'):
                 update_inc(inc_num=inc_num_from_command, text=message_from_user.removesuffix('ок'), end=get_now())
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
-                                          message_id=message.message_id,
+                                          message_id=message_id_from_user,
                                           text='событие закрыто:\n' + print_inc(get_inc(inc_num=inc_num_from_command)))
 
                 if need_delete_related_messages_after_closing:
@@ -179,17 +180,18 @@ def get_user_text(message):
             else:
                 update_inc(inc_num=inc_num_from_command, text=message_from_user)
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
-                                          message_id=message.message_id,
+                                          message_id=message_id_from_user,
                                           text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
 
-        get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
+        if check_inc_exist(inc_num_from_command):
+            get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
 
     elif message_from_user.lower() == 'всеинц':
-        reply(chat_id=current_chat_id, message_id=message.message_id, text=str(print_dict_of_incs()))
+        reply(chat_id=current_chat_id, message_id=message_id_from_user, text=str(print_dict_of_incs()))
 
     elif message_from_user.lower() == 'всеинцудалить':
         clear_inc(current_chat_id)
-        reply(chat_id=current_chat_id, message_id=message.message_id, text='все события удалены')
+        reply(chat_id=current_chat_id, message_id=message_id_from_user, text='все события удалены')
 
     elif message_from_user.lower() == 'удалятькоманды':
         set_need_delete_commands(True)
