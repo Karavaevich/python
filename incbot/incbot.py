@@ -211,7 +211,7 @@ def get_user_text(message):
     # except:
     #     bot.send_message(chat_id_to_reply, 'ошибка')
 
-    bot.send_message(chat_id_to_reply, message.message_id)
+    # bot.send_message(chat_id_to_reply, message.message_id)
 
 
 def reply(chat_id: str, message_id: int, text: str) -> int:
@@ -302,8 +302,8 @@ def check_inc_exist(num):
 
 
 def inc_by_message(mes_id: int) -> int:
-    for inc in dict_of_incs:
-        if inc.messages.__contains__(mes_id):
+    for inc in dict_of_incs.keys():
+        if dict_of_incs[inc].messages.__contains__(mes_id):
             return inc.number
     return 0
 
