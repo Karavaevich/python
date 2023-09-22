@@ -152,28 +152,15 @@ def get_user_text(message):
                                           message_id=message.message_id,
                                           text=print_inc(new_inc))
                 new_inc.messages.append(add_mes_id_to_inc)
+
     elif is_update_command(message):
         inc_num_from_command = message.reply_to_message.message_id
         add_mes_id_to_inc = None
+
         if message_from_user.lower() == 'удалить':
             reply(chat_id=chat_id_to_reply,
                   message_id=message.message_id,
                   text='удалено событие:\n' + print_inc(dict_of_incs.pop(inc_num_from_command)))
-
-        elif message_from_user.lower() == 'всеинц':
-            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs()))
-
-        elif message_from_user.lower() == 'всеинцудалить':
-            clear_inc()
-            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text='все события удалены')
-
-        elif message_from_user.lower() == 'удалятькоманды':
-            set_need_delete_commands(True)
-            bot.send_message(chat_id_to_reply, 'команды будут удаляться')
-
-        elif message_from_user.lower() == 'неудалятькоманды':
-            set_need_delete_commands(False)
-            bot.send_message(chat_id_to_reply, 'команды не будут удаляться')
 
         elif is_tks_update_command(list_of_words_from_mes):
             update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1])
@@ -196,6 +183,20 @@ def get_user_text(message):
         if add_mes_id_to_inc is not None:
             get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
 
+    elif message_from_user.lower() == 'всеинц':
+        reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs()))
+
+    elif message_from_user.lower() == 'всеинцудалить':
+        clear_inc()
+        reply(chat_id=chat_id_to_reply, message_id=message.message_id, text='все события удалены')
+
+    elif message_from_user.lower() == 'удалятькоманды':
+        set_need_delete_commands(True)
+        bot.send_message(chat_id_to_reply, 'команды будут удаляться')
+
+    elif message_from_user.lower() == 'неудалятькоманды':
+        set_need_delete_commands(False)
+        bot.send_message(chat_id_to_reply, 'команды не будут удаляться')
 
 def is_tks_update_command(lst: list[str]):
     if lst[0].lower() == 'ткс':
