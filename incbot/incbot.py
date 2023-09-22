@@ -45,7 +45,7 @@ need_delete_commands = False
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
-                 tks: Optional[str] = None, end_time: Optional[str] = None, messages=None):
+                 tks: Optional[str] = None, end_time: Optional[str] = None, messages: list = None):
         if updates is None:
             updates = {}
         self.number: int = number
