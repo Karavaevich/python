@@ -294,3 +294,5 @@ if __name__ == '__main__':
             port=WEBHOOK_PORT,
             ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
             debug=True)
+    bot.remove_webhook()
+
