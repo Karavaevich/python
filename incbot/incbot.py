@@ -156,9 +156,7 @@ def get_user_text(message):
         add_mes_id_to_inc = None
 
         if message_from_user.lower() == 'удалить':
-            reply(chat_id=current_chat_id,
-                  message_id=message.message_id,
-                  text='удалено событие:\n' + print_inc(dict_of_incs.pop(inc_num_from_command)))
+            delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
 
         elif is_tks_update_command(list_of_words_from_mes):
             update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1])
