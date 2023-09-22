@@ -16,9 +16,9 @@ from datetime import datetime
 # When asked for "Common Name (e.g. server FQDN or YOUR name)" you should reply
 # with the same value in you put in WEBHOOK_HOST
 
-API_TOKEN = '6402634448:AAGBaX0Iqn5U0EFyQrN62posnLWri7p7rPo'
+API_TOKEN = '6449337054:AAE_Pa6ipXDR44502Dy9lhj_LY5hIuxGXQY'
 WEBHOOK_HOST = '94.139.255.242'
-WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
+WEBHOOK_PORT = 443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '192.168.0.178'  # In some VPS you may need to put here the IP addr
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
@@ -294,5 +294,3 @@ if __name__ == '__main__':
             port=WEBHOOK_PORT,
             ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
             debug=True)
-#    bot.remove_webhook()
-
