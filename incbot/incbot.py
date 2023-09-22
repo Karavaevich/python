@@ -97,29 +97,24 @@ def start(message):
 создать событие:
 “инц” - присвоится только номер и время начала
 “инц ТЕКСТ” - присвоится номер, время начала и описание
+“инц ТЕКСТ ок” - присвоится номер, описание, время начала+завершения
 
-обновить событие:
-“инц НОМЕР ТЕКСТ” - присвоится описание, если оно было пустое, иначе добавится новое дополнение со временем
+изменить событие:
+ответить на любое из сообщений бота, связанного с событием, по след логике:
+“ТЕКСТ” - присвоится описание, если оно было пустое, иначе добавится новое дополнение со временем
+“ткс НОМЕР_ТКС” - событию присвоится номер ткс
+“<ТЕКСТ> ок” - событию присвоится время завершения, текст опционален, если указан - запишется либо в описание, либо в дополнения
+"удалить" - удалить выбранное событие, удалятся так же и все связанные с ним сообщения от бота(TODO)
 
-добавить номер ткс в событие:
-“инц ткс НОМЕР_ТКС” - событию присвоится номер ткс
-
-закрыть событие:
-“инц НОМЕР <ТЕКСТ> ок” - событию присвоится время завершения, текст опционален, если указан - запишется либо в описание, либо в дополнения
-*событие можно закрыть сразу при открытии, дописав “ок” в конце сообщения
-
-вывести событие:
-“инц НОМЕР” - вывести конкретное событие
+вывести события:
 “всеинц” - вывести список всех событий одним сообщением
 
 очистить события:
-“инц НОМЕР удалить” - удалить конкретное событие
 “всеинцудалить” - все события очистятся и счетчик сбросится
 
 опции:
 "удалятькоманды" - команды(сообщения) пользователя будут удаляться
 "неудалятькоманды" - наоборот, соответственно
-
     ''')
 
 
@@ -132,20 +127,22 @@ def get_user_text(message):
     # try:
 
     if list_of_words_from_mes[0].lower() == 'инц':
+
         if list_of_words_from_mes.__len__() == 1:
             new_inc = create_inc(start=str(get_now()))
             add_mes_id_to_inc = reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
             new_inc.messages.append(add_mes_id_to_inc)
+
         else:
-            des = ''
-            for i in range(1, list_of_words_from_mes.__len__()):
-                des += str(list_of_words_from_mes[i]) + ' '
-            if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
-                new_inc = create_inc(descr=des.removesuffix('ок '), start=str(get_now()), end=str(get_now()))
+            des = message_from_user[4:]
+
+            if des.lower().endswith('ок'):
+                new_inc = create_inc(descr=des.removesuffix('ок'), start=str(get_now()), end=str(get_now()))
                 add_mes_id_to_inc = reply(chat_id=chat_id_to_reply,
                                           message_id=message.message_id,
                                           text=print_inc(new_inc))
                 new_inc.messages.append(add_mes_id_to_inc)
+
             else:
                 new_inc = create_inc(descr=des, start=str(get_now()))
                 add_mes_id_to_inc = reply(chat_id=chat_id_to_reply,
@@ -154,7 +151,7 @@ def get_user_text(message):
                 new_inc.messages.append(add_mes_id_to_inc)
 
     elif is_update_command(message):
-        inc_num_from_command = inc_by_message(message.reply_to_message.message_id)
+        inc_num_from_command = get_inc_by_message(message.reply_to_message.message_id)
         add_mes_id_to_inc = None
 
         if message_from_user.lower() == 'удалить':
@@ -166,6 +163,7 @@ def get_user_text(message):
             update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1])
             add_mes_id_to_inc = reply(chat_id=chat_id_to_reply, message_id=message.message_id,
                                       text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
+
         else:
 
             if message_from_user.lower().endswith('ок'):
@@ -180,8 +178,7 @@ def get_user_text(message):
                                           message_id=message.message_id,
                                           text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
 
-        if add_mes_id_to_inc is not None:
-            get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
+        get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
 
     elif message_from_user.lower() == 'всеинц':
         reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs()))
@@ -199,7 +196,7 @@ def get_user_text(message):
         bot.send_message(chat_id_to_reply, 'команды не будут удаляться')
 
 
-def is_tks_update_command(lst: list[str]):
+def is_tks_update_command(lst: list[str]) -> bool:
     if lst[0].lower() == 'ткс':
         if lst.__len__() == 2:
             if lst[1].isnumeric():
@@ -209,7 +206,7 @@ def is_tks_update_command(lst: list[str]):
 
 def is_update_command(message: telebot.types.Message) -> bool:
     if message.reply_to_message is not None:
-        if inc_by_message(message.reply_to_message.message_id) > 0:
+        if get_inc_by_message(message.reply_to_message.message_id) > 0:
             return True
         return False
 
@@ -221,9 +218,8 @@ def reply(chat_id: str, message_id: int, text: str) -> int:
     return new_mes_id_for_adding_to_inc
 
 
-def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
+def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None) -> Inc:
     global last_inc_num
-    global map_of_incs
     inc_num = last_inc_num + 1
     last_inc_num = inc_num
     new_inc = Inc(number=inc_num, description=descr, start_time=start, end_time=end)
@@ -299,7 +295,7 @@ def check_inc_exist(num):
         return False
 
 
-def inc_by_message(mes_id: int) -> int:
+def get_inc_by_message(mes_id: int) -> int:
     for inc in dict_of_incs.keys():
         if dict_of_incs[inc].messages.__contains__(mes_id):
             return dict_of_incs[inc].number
