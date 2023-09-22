@@ -188,7 +188,7 @@ def get_user_text(message):
         reply(chat_id=current_chat_id, message_id=message.message_id, text=str(print_dict_of_incs()))
 
     elif message_from_user.lower() == 'всеинцудалить':
-        clear_inc()
+        clear_inc(current_chat_id)
         reply(chat_id=current_chat_id, message_id=message.message_id, text='все события удалены')
 
     elif message_from_user.lower() == 'удалятькоманды':
@@ -323,10 +323,10 @@ def get_inc_by_message(mes_id: int) -> int:
     return 0
 
 
-def clear_inc():
+def clear_inc(chat_id):
     global last_inc_num
     for inc in dict_of_incs.keys():
-        delete_related_messages(inc)
+        delete_related_messages(chat_id=chat_id, inc_num=inc)
     dict_of_incs.clear()
     last_inc_num = 0
 
