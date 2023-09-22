@@ -117,6 +117,7 @@ def start(message):
 “всеинцудалить” - все события очистятся и счетчик сбросится
     ''')
 
+
 #
 # @bot.message_handler(commands=['showbuttons'])
 # def show_buttons(message):
@@ -141,11 +142,11 @@ def get_user_text(message):
 
     # try:
 
-    if is_command(message):
+    if is_update_command(message):
         inc: Inc = get_inc(inc_by_message(message.reply_to_message.message_id))
         add_mes_id = reply(chat_id=chat_id_to_reply,
-                               message_id=message.message_id,
-                               text=print_inc(inc))
+                           message_id=message.message_id,
+                           text='caught update command')
         inc.messages.append(add_mes_id)
 
     if list_of_words_from_mes[0].lower() == 'инц':
@@ -215,7 +216,7 @@ def get_user_text(message):
     # bot.send_message(chat_id_to_reply, message.message_id)
 
 
-def is_command(message: telebot.types.Message) -> bool:
+def is_update_command(message: telebot.types.Message) -> bool:
     if message.reply_to_message is not None:
         if inc_by_message(message.reply_to_message.message_id) > 0:
             return True
