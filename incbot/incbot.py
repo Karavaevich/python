@@ -143,41 +143,44 @@ def get_user_text(message):
 
     if message.reply_to_message is not None:
         if inc_by_message(message.reply_to_message.message_id) > 0:
-            reply(chat_id=chat_id_to_reply,
-                  message_id=message.message_id,
-                  text=print_inc(get_inc(inc_by_message(message.reply_to_message.message_id))))
+            add_mes_id = reply(chat_id=chat_id_to_reply,
+                               message_id=message.message_id,
+                               text=print_inc(get_inc(inc_by_message(message.reply_to_message.message_id))))
+
     if list_of_words_from_mes[0].lower() == 'инц':
         if list_of_words_from_mes.__len__() == 1:
-            new_inc = create_inc(start=str(get_now()), mes_id=message.message_id)
-            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
+            new_inc = create_inc(start=str(get_now()))
+            add_mes_id = reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
+            new_inc.messages.append(add_mes_id)
         elif not list_of_words_from_mes[1].isnumeric():
             des = ''
             for i in range(1, list_of_words_from_mes.__len__()):
                 des += str(list_of_words_from_mes[i]) + ' '
             if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
                 new_inc = create_inc(descr=des.removesuffix('ок '), start=str(get_now()), end=str(get_now()))
-                reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
+                add_mes_id = reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
             else:
                 new_inc = create_inc(descr=des, start=str(get_now()))
-                reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
+                add_mes_id = reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
         elif check_inc_exist(int(list_of_words_from_mes[1])):
             if list_of_words_from_mes.__len__() == 2:
-                reply(chat_id=chat_id_to_reply,
-                      message_id=message.message_id,
-                      text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
+                add_mes_id = reply(chat_id=chat_id_to_reply,
+                                   message_id=message.message_id,
+                                   text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
             elif list_of_words_from_mes.__len__() > 2:
                 if list_of_words_from_mes[2].lower() == 'удалить':
-                    reply(chat_id=chat_id_to_reply,
-                          message_id=message.message_id,
-                          text='удалено событие:\n' + print_inc(dict_of_incs.pop(int(
-                              list_of_words_from_mes[1]))))
+                    add_mes_id = reply(chat_id=chat_id_to_reply,
+                                       message_id=message.message_id,
+                                       text='удалено событие:\n' + print_inc(dict_of_incs.pop(int(
+                                           list_of_words_from_mes[1]))))
                 elif list_of_words_from_mes[2].lower() == 'ткс':
                     if list_of_words_from_mes.__len__() > 3:
                         if list_of_words_from_mes[3].isnumeric():
                             update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
-                            reply(chat_id=chat_id_to_reply,
-                                  message_id=message.message_id,
-                                  text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
+                            add_mes_id = reply(chat_id=chat_id_to_reply,
+                                               message_id=message.message_id,
+                                               text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])),
+                                                              short=True))
                 else:
                     des = ''
                     for i in range(2, list_of_words_from_mes.__len__()):
@@ -186,19 +189,19 @@ def get_user_text(message):
                         update_inc(inc_num=int(list_of_words_from_mes[1]),
                                    text=des.removesuffix('ок '),
                                    end=get_now())
-                        reply(chat_id=chat_id_to_reply,
-                              message_id=message.message_id,
-                              text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
+                        add_mes_id = reply(chat_id=chat_id_to_reply,
+                                           message_id=message.message_id,
+                                           text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
                     else:
                         update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
-                        reply(chat_id=chat_id_to_reply,
-                              message_id=message.message_id,
-                              text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
+                        add_mes_id = reply(chat_id=chat_id_to_reply,
+                                           message_id=message.message_id,
+                                           text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
     elif list_of_words_from_mes[0].lower() == 'всеинц':
-        reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs()))
+        add_mes_id = reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs()))
     elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
         clear_inc()
-        reply(chat_id=chat_id_to_reply, message_id=message.message_id, text='все события удалены')
+        add_mes_id = reply(chat_id=chat_id_to_reply, message_id=message.message_id, text='все события удалены')
     elif list_of_words_from_mes[0].lower() == 'удалятькоманды':
         set_need_delete_commands(True)
         bot.send_message(chat_id_to_reply, 'команды будут удаляться')
@@ -211,20 +214,19 @@ def get_user_text(message):
     bot.send_message(chat_id_to_reply, message.message_id)
 
 
-def reply(chat_id: str, message_id: int, text: str):
-    bot.send_message(chat_id, text)
+def reply(chat_id: str, message_id: int, text: str) -> int:
+    new_mes_id_for_adding_to_inc = bot.send_message(chat_id, text).message_id
     if need_delete_commands:
         bot.delete_message(chat_id=chat_id, message_id=message_id)
+    return new_mes_id_for_adding_to_inc
 
 
-def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None,
-               mes_id: Optional[int] = None):
+def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
     global last_inc_num
     global map_of_incs
     inc_num = last_inc_num + 1
     last_inc_num = inc_num
     new_inc = Inc(number=inc_num, description=descr, start_time=start, end_time=end)
-    new_inc.messages.append(mes_id)
     dict_of_incs[inc_num] = new_inc
     return new_inc
 
