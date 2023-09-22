@@ -48,6 +48,8 @@ class Inc:
                  tks: Optional[str] = None, end_time: Optional[str] = None, messages=None):
         if messages is None:
             messages = []
+        if updates is None:
+            updates = {}
         self.number: int = number
         self.description: str = description
         self.updates: dict = updates
