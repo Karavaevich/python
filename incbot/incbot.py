@@ -304,7 +304,7 @@ def check_inc_exist(num):
 def inc_by_message(mes_id: int) -> int:
     for inc in dict_of_incs.keys():
         if dict_of_incs[inc].messages.__contains__(mes_id):
-            return dict_of_incs[inc].inc.number
+            return dict_of_incs[inc].number
     return 0
 
 
