@@ -45,7 +45,7 @@ need_delete_commands = False
 
 class Inc:
     def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
-                 tks: Optional[str] = None, end_time: Optional[str] = None):
+                 tks: Optional[str] = None, end_time: Optional[str] = None, messages=None):
         if updates is None:
             updates = {}
         self.number: int = number
@@ -54,6 +54,7 @@ class Inc:
         self.tks: str = tks
         self.start_time: str = start_time
         self.end_time: str = end_time
+        self.messages: list = messages
 
 
 dict_of_incs = dict()
@@ -137,9 +138,16 @@ def get_user_text(message):
     list_of_words_from_mes = mes.split(' ')
 
     try:
+
+        if message.reply_to_message is not None:
+            if inc_by_message(message.reply_to_message.message_id) > 0:
+                reply(chat_id=chat_id_to_reply,
+                      message_id=message.message_id,
+                      text=print_inc(get_inc(inc_by_message(message.reply_to_message.message_id))))
+
         if list_of_words_from_mes[0].lower() == 'инц':
             if list_of_words_from_mes.__len__() == 1:
-                new_inc = create_inc(start=str(get_now()))
+                new_inc = create_inc(start=str(get_now()), mes_id=message.message_id)
                 reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
             elif not list_of_words_from_mes[1].isnumeric():
                 des = ''
@@ -209,12 +217,13 @@ def reply(chat_id: str, message_id: int, text: str):
         bot.delete_message(chat_id=chat_id, message_id=message_id)
 
 
-def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
+def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None, mes_id: Optional[int] = None):
     global last_inc_num
     global map_of_incs
     inc_num = last_inc_num + 1
     last_inc_num = inc_num
     new_inc = Inc(number=inc_num, description=descr, start_time=start, end_time=end)
+    new_inc.messages.append(mes_id)
     dict_of_incs[inc_num] = new_inc
     return new_inc
 
@@ -287,6 +296,13 @@ def check_inc_exist(num):
         return True
     else:
         return False
+
+
+def inc_by_message(mes_id: int) -> int:
+    for inc in dict_of_incs:
+        if inc.messages.__contains__(mes_id):
+            return inc.number
+    return 0
 
 
 def clear_inc():
