@@ -264,8 +264,6 @@ def print_inc(inc: Inc, short: bool = False):
                 result += update + ' ' + inc.updates[update] + '\n'
     if inc.end_time is not None:
         result += 'заверш: ' + inc.end_time + '\n'
-    if inc.number is not None:
-        result += 'админу: ' + str(inc.number) + '\n'
     result += '\n'
     return result
 
