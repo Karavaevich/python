@@ -121,7 +121,7 @@ def start(message):
 
 @bot.message_handler()
 def get_user_text(message):
-    chat_id_to_reply = message.chat.id
+    current_chat_id = message.chat.id
     message_from_user: str = message.text
     list_of_words_from_mes = message_from_user.split(' ')
 
@@ -131,7 +131,7 @@ def get_user_text(message):
 
         if list_of_words_from_mes.__len__() == 1:
             new_inc = create_inc(start=str(get_now()))
-            add_mes_id_to_inc = reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
+            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message.message_id, text=print_inc(new_inc))
             new_inc.messages.append(add_mes_id_to_inc)
 
         else:
@@ -139,14 +139,14 @@ def get_user_text(message):
 
             if des.lower().endswith('ок'):
                 new_inc = create_inc(descr=des.removesuffix('ок'), start=str(get_now()), end=str(get_now()))
-                add_mes_id_to_inc = reply(chat_id=chat_id_to_reply,
+                add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message.message_id,
                                           text=print_inc(new_inc))
                 new_inc.messages.append(add_mes_id_to_inc)
 
             else:
                 new_inc = create_inc(descr=des, start=str(get_now()))
-                add_mes_id_to_inc = reply(chat_id=chat_id_to_reply,
+                add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message.message_id,
                                           text=print_inc(new_inc))
                 new_inc.messages.append(add_mes_id_to_inc)
@@ -156,48 +156,48 @@ def get_user_text(message):
         add_mes_id_to_inc = None
 
         if message_from_user.lower() == 'удалить':
-            reply(chat_id=chat_id_to_reply,
+            reply(chat_id=current_chat_id,
                   message_id=message.message_id,
                   text='удалено событие:\n' + print_inc(dict_of_incs.pop(inc_num_from_command)))
 
         elif is_tks_update_command(list_of_words_from_mes):
             update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1])
-            add_mes_id_to_inc = reply(chat_id=chat_id_to_reply, message_id=message.message_id,
+            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message.message_id,
                                       text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
 
         else:
 
             if message_from_user.lower().endswith('ок'):
                 update_inc(inc_num=inc_num_from_command, text=message_from_user.removesuffix('ок'), end=get_now())
-                add_mes_id_to_inc = reply(chat_id=chat_id_to_reply,
+                add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message.message_id,
                                           text='событие закрыто:\n' + print_inc(get_inc(inc_num=inc_num_from_command)))
 
                 if need_delete_related_messages_after_closing:
-                    delete_related_messages(inc_num_from_command)
+                    delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
 
             else:
                 update_inc(inc_num=inc_num_from_command, text=message_from_user)
-                add_mes_id_to_inc = reply(chat_id=chat_id_to_reply,
+                add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message.message_id,
                                           text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
 
         get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
 
     elif message_from_user.lower() == 'всеинц':
-        reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs()))
+        reply(chat_id=current_chat_id, message_id=message.message_id, text=str(print_dict_of_incs()))
 
     elif message_from_user.lower() == 'всеинцудалить':
         clear_inc()
-        reply(chat_id=chat_id_to_reply, message_id=message.message_id, text='все события удалены')
+        reply(chat_id=current_chat_id, message_id=message.message_id, text='все события удалены')
 
     elif message_from_user.lower() == 'удалятькоманды':
         set_need_delete_commands(True)
-        bot.send_message(chat_id_to_reply, 'команды будут удаляться')
+        bot.send_message(current_chat_id, 'команды будут удаляться')
 
     elif message_from_user.lower() == 'неудалятькоманды':
         set_need_delete_commands(False)
-        bot.send_message(chat_id_to_reply, 'команды не будут удаляться')
+        bot.send_message(current_chat_id, 'команды не будут удаляться')
 
 
 def is_tks_update_command(lst: list[str]) -> bool:
