@@ -322,6 +322,8 @@ def get_inc_by_message(mes_id: int) -> int:
 
 def clear_inc():
     global last_inc_num
+    for inc in dict_of_incs.keys():
+        delete_related_messages(inc)
     dict_of_incs.clear()
     last_inc_num = 0
 
