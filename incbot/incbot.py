@@ -1,4 +1,5 @@
 import collections
+import json
 import traceback
 from typing import Optional
 
@@ -32,12 +33,18 @@ from datetime import datetime
 
 
 # try:
-props_from_file = {str, str}
-with open('/incbot/PROPERTIES.cfg', 'r') as file:
-    for line in props_from_file:
-        prop, value = line.split(',')
-        props_from_file[prop] = value
-    file.close()
+
+# reading the data from the file
+
+with open('/incbot/PROPERTIES.json') as file:
+    data = file.read()
+    props_from_file = json.loads(data)
+
+# with open('/incbot/PROPERTIES.cfg', 'r') as file:
+#     for line in props_from_file:
+#         prop, value = line.split('=')
+#         props_from_file[prop] = value
+#     file.close()
 
 API_TOKEN = props_from_file['API_TOKEN']
 WEBHOOK_PORT = props_from_file['WEBHOOK_PORT']  # 443, 80, 88 or 8443 (port need to be 'open')
