@@ -289,12 +289,10 @@ def print_inc(inc: Inc, short: bool = False):
             last_update_text = inc.updates[last_update_key][last_update_user]
             result += last_update_user + ': ' + last_update_text + '\n'
         else:
-            for update in inc.updates:
-                for text in update:
-                    update_key = update
-                    update_user = inc.updates[update_key]
+            for update_key in inc.updates.keys():
+                for update_user in inc.updates[update_key].keys():
                     update_text = inc.updates[update_key][update_user]
-                    result += str(update_key) + ': ' + str(update_user) + ': ' + update_text + '\n'
+                    result += str(update_key) + ': ' + update_user + ': ' + update_text'\n'
     if inc.end_time is not None:
         result += 'заверш: ' + inc.end_time + '\n'
     result += '\n'
