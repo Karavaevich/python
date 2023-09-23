@@ -1,3 +1,4 @@
+import collections
 import traceback
 from typing import Optional
 
@@ -53,7 +54,7 @@ class Inc:
             updates = {}
         self.number: int = number
         self.description: str = description
-        self.updates: dict[str, dict] = updates
+        self.updates: dict[collections.Iterable, dict] = updates
         self.tks: str = tks
         self.start_time: str = start_time
         self.reporter: str = reporter
@@ -288,7 +289,7 @@ def print_inc(inc: Inc, short: bool = False):
         else:
             for update in inc.updates:
                 for text in update:
-                    result += update + ' ' + inc.updates[update][text] + '\n'
+                    result += str(update) + ' ' + inc.updates[update][text] + '\n'
     if inc.end_time is not None:
         result += 'заверш: ' + inc.end_time + '\n'
     result += '\n'
@@ -296,7 +297,7 @@ def print_inc(inc: Inc, short: bool = False):
 
 
 def get_now():
-    return str(datetime.now().strftime('%d.%m %H:%M'))
+    return datetime.now().strftime('%d.%m %H:%M')
 
 
 def get_now_short():
