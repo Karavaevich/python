@@ -263,7 +263,9 @@ def update_inc(inc_num, reporter: str, text: Optional[str] = None, tks_num: Opti
         if dict_of_incs[inc_num].description is None:
             dict_of_incs[inc_num].description = text
         else:
-            dict_of_incs[inc_num].updates[get_now_short()][reporter] = text
+            new_update_time = get_now_short()
+            dict_of_incs[inc_num].updates[new_update_time] = {}
+            dict_of_incs[inc_num].updates[new_update_time][reporter] = text
     if tks_num is not None:
         dict_of_incs[inc_num].tks = tks_num
     if end is not None:
