@@ -35,7 +35,7 @@ from datetime import datetime
 props_from_file = {str, str}
 with open('/incbot/PROPERTIES.cfg', 'r') as book_file:
     for line in props_from_file:
-        prop, value = line.strip().split('=')
+        prop, value = line.split('=')
         props_from_file[prop] = value
 
 API_TOKEN = props_from_file['API_TOKEN']
