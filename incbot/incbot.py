@@ -43,6 +43,7 @@ stable = True
 last_inc_num = 0
 need_delete_commands = True
 need_delete_related_messages_after_closing = True
+need_mention_user_in_full_print = True
 
 
 class Inc:
@@ -135,7 +136,9 @@ def get_user_text(message):
 
         if list_of_words_from_mes.__len__() == 1:
             new_inc = create_inc(start_datetime=str(get_now()), reporter=user)
-            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user, text=print_inc(inc=new_inc))
+            add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                      message_id=message_id_from_user,
+                                      text=print_inc(inc=new_inc))
             new_inc.messages.append(add_mes_id_to_inc)
 
         else:
@@ -143,7 +146,10 @@ def get_user_text(message):
 
             if des.lower().endswith(' ок'):
                 des_for_inc = des[:-3]
-                new_inc = create_inc(descr=des_for_inc, start_datetime=str(get_now()), end=str(get_now()), reporter=user)
+                new_inc = create_inc(descr=des_for_inc,
+                                     start_datetime=str(get_now()),
+                                     end=str(get_now()),
+                                     reporter=user)
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
                                           text=print_inc(inc=new_inc))
@@ -206,14 +212,22 @@ def get_user_text(message):
         bot.send_message(current_chat_id, 'команды пользователя не будут удаляться')
 
     elif message_from_user.lower() == 'удалятьсвязанные':
-        set_need_delete_commands(True)
+        set_need_delete_related_messages_after_closing(True)
         bot.send_message(current_chat_id, 'предыдущие собщения бота по событию при его закрытии/удалении будут '
                                           'удаляться')
 
     elif message_from_user.lower() == 'неудалятьсвязанные':
-        set_need_delete_commands(False)
+        set_need_delete_related_messages_after_closing(False)
         bot.send_message(current_chat_id, 'предыдущие собщения бота по событию при его закрытии/удалении не будут '
                                           'удаляться')
+
+    elif message_from_user.lower() == 'неписатьпользователейвотчете':
+        set_need_mention_user_in_full_print(True)
+        bot.send_message(current_chat_id, 'пользователи в отчетах не будут упоминаться')
+
+    elif message_from_user.lower() == 'писатьпользователейвотчете':
+        set_need_mention_user_in_full_print(True)
+        bot.send_message(current_chat_id, 'пользователи в отчетах будут упоминаться')
 
 
 def is_tks_update_command(lst: list[str]) -> bool:
@@ -258,7 +272,8 @@ def get_inc(inc_num: int) -> Inc:
     return dict_of_incs[inc_num]
 
 
-def update_inc(inc_num, reporter: str, text: Optional[str] = None, tks_num: Optional[str] = None, end: Optional[str] = None):
+def update_inc(inc_num, reporter: str, text: Optional[str] = None, tks_num: Optional[str] = None,
+               end: Optional[str] = None):
     if (text is not None) & (text != ''):
         if dict_of_incs[inc_num].description is None:
             dict_of_incs[inc_num].description = text
@@ -293,7 +308,10 @@ def print_inc(inc: Inc, short: bool = False):
             for update_key in inc.updates.keys():
                 for update_user in inc.updates[update_key].keys():
                     update_text = inc.updates[update_key][update_user]
-                    result += str(update_key) + ': ' + update_user + ': ' + update_text + '\n'
+                    if need_mention_user_in_full_print:
+                        result += str(update_key) + ' ' + update_user + ': ' + update_text + '\n'
+                    else:
+                        result += str(update_key) + ': ' + update_text + '\n'
     if inc.end_time is not None:
         result += 'заверш: ' + inc.end_time + '\n'
     result += '\n'
@@ -322,6 +340,16 @@ def print_dict_of_incs():
 def set_need_delete_commands(flag: bool):
     global need_delete_commands
     need_delete_commands = flag
+
+
+def set_need_delete_related_messages_after_closing(flag: bool):
+    global need_delete_related_messages_after_closing
+    need_delete_related_messages_after_closing = flag
+
+
+def set_need_mention_user_in_full_print(flag: bool):
+    global need_mention_user_in_full_print
+    need_mention_user_in_full_print = flag
 
 
 def check_inc_exist(num):
