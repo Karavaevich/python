@@ -257,7 +257,7 @@ def reply(chat_id: str, message_id: int, text: str) -> int:
     if need_delete_commands:
         try:
             bot.delete_message(chat_id=chat_id, message_id=message_id)
-        except telebot.apihelper.ApiTelegramException():
+        except telebot.apihelper.ApiTelegramException:
             pass
     return new_mes_id_for_adding_to_inc
 
@@ -274,7 +274,10 @@ def create_inc(start_datetime: str, reporter: str, descr: Optional[str] = None, 
 def delete_related_messages(chat_id: str, inc_num: int):
     bot_messages = get_inc(inc_num=inc_num).messages
     for bot_message in bot_messages:
-        bot.delete_message(chat_id=chat_id, message_id=bot_message)
+        try:
+            bot.delete_message(chat_id=chat_id, message_id=bot_message)
+        except telebot.apihelper.ApiTelegramException:
+            pass
     bot_messages.clear()
 
 
@@ -336,15 +339,15 @@ def get_now_short():
     return datetime.now().strftime('%H:%M:%S')
 
 
-def print_dict_of_incs():
-    result = ''
-    if dict_of_incs.__len__() != 0:
-        result = 'cписок: \n\n'
-        for inc_num in dict_of_incs.keys():
-            result += print_inc(dict_of_incs[inc_num])
-    else:
-        result = 'событий нет'
-    return result
+# def print_dict_of_incs():
+#     result = ''
+#     if dict_of_incs.__len__() != 0:
+#         result = 'cписок: \n\n'
+#         for inc_num in dict_of_incs.keys():
+#             result += print_inc(dict_of_incs[inc_num])
+#     else:
+#         result = 'событий нет'
+#     return result
 
 
 def set_need_delete_commands(flag: bool):
