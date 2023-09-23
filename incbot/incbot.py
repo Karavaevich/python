@@ -171,7 +171,7 @@ def get_user_text(message):
 
         else:
 
-            if message_from_user.lower().endswith(' ок'):
+            if list_of_words_from_mes[-1].lower() == 'ок':
                 update_inc(inc_num=inc_num_from_command, text=message_from_user[:-3], end=get_now())
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
