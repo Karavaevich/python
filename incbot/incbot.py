@@ -130,102 +130,105 @@ def get_user_text(message):
     user = '@' + message.from_user.username
     list_of_words_from_mes = message_from_user.split(' ')
 
-    # try:
+    try:
 
-    if list_of_words_from_mes[0].lower() == 'инц':
+        if list_of_words_from_mes[0].lower() == 'инц':
 
-        if list_of_words_from_mes.__len__() == 1:
-            new_inc = create_inc(start_datetime=str(get_now()), reporter=user)
-            add_mes_id_to_inc = reply(chat_id=current_chat_id,
-                                      message_id=message_id_from_user,
-                                      text=print_inc(inc=new_inc))
-            new_inc.messages.append(add_mes_id_to_inc)
-
-        else:
-            des = message_from_user[4:]
-            new_inc = create_inc(descr=des, start_datetime=str(get_now()), reporter=user)
-            add_mes_id_to_inc = reply(chat_id=current_chat_id,
-                                      message_id=message_id_from_user,
-                                      text=print_inc(inc=new_inc))
-            new_inc.messages.append(add_mes_id_to_inc)
-
-    elif is_update_command(message):
-        inc_num_from_command = get_inc_by_message(message.reply_to_message.message_id)
-        add_mes_id_to_inc = None
-
-        if message_from_user.lower() == 'удалить':
-            delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
-            dict_of_incs.pop(inc_num_from_command)
-            bot.delete_message(chat_id=current_chat_id, message_id=message_id_from_user)
-
-        elif message_from_user.lower() == 'разверни':
-            add_mes_id_to_inc = reply(chat_id=current_chat_id,
-                                      message_id=message_id_from_user, text=print_inc(get_inc(inc_num_from_command)))
-
-        elif is_tks_update_command(list_of_words_from_mes):
-            update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1], reporter=user)
-            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user,
-                                      text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
-
-        else:
-
-            if list_of_words_from_mes[-1].lower() == 'ок':
-                update_inc(inc_num=inc_num_from_command, text=message_from_user[:-3], end=get_now(), reporter=user)
+            if list_of_words_from_mes.__len__() == 1:
+                new_inc = create_inc(start_datetime=str(get_now()), reporter=user)
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
-                                          text='завершено:\n' + print_inc(get_inc(inc_num=inc_num_from_command)))
-
-                if need_delete_related_messages_after_closing:
-                    delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
+                                          text=print_inc(inc=new_inc))
+                new_inc.messages.append(add_mes_id_to_inc)
 
             else:
-                update_inc(inc_num=inc_num_from_command, text=message_from_user, reporter=user)
+                des = message_from_user[4:]
+                new_inc = create_inc(descr=des, start_datetime=str(get_now()), reporter=user)
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
+                                          text=print_inc(inc=new_inc))
+                new_inc.messages.append(add_mes_id_to_inc)
+
+        elif is_update_command(message):
+            inc_num_from_command = get_inc_by_message(message.reply_to_message.message_id)
+            add_mes_id_to_inc = None
+
+            if message_from_user.lower() == 'удалить':
+                delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
+                dict_of_incs.pop(inc_num_from_command)
+                bot.delete_message(chat_id=current_chat_id, message_id=message_id_from_user)
+
+            elif message_from_user.lower() == 'разверни':
+                add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                          message_id=message_id_from_user, text=print_inc(get_inc(inc_num_from_command)))
+
+            elif is_tks_update_command(list_of_words_from_mes):
+                update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1], reporter=user)
+                add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user,
                                           text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
 
-        if check_inc_exist(inc_num_from_command):
-            get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
+            else:
 
-    elif message_from_user.lower() == 'всеинц':
-        if dict_of_incs.__len__() != 0:
-            for inc_num in dict_of_incs.keys():
-                add_mes_id_to_inc = reply(chat_id=current_chat_id,
-                                          message_id=message_id_from_user,
-                                          text=print_inc(dict_of_incs[inc_num]))
-                get_inc(inc_num=inc_num).messages.append(add_mes_id_to_inc)
-        else:
-            reply(chat_id=current_chat_id, message_id=message_id_from_user, text='событий нет')
+                if list_of_words_from_mes[-1].lower() == 'ок':
+                    update_inc(inc_num=inc_num_from_command, text=message_from_user[:-3], end=get_now(), reporter=user)
+                    add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                              message_id=message_id_from_user,
+                                              text='завершено:\n' + print_inc(get_inc(inc_num=inc_num_from_command)))
 
-    elif message_from_user.lower() == 'всеинцудалить':
-        clear_inc(current_chat_id)
-        reply(chat_id=current_chat_id, message_id=message_id_from_user, text='все события удалены')
+                    if need_delete_related_messages_after_closing:
+                        delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
 
-    elif message_from_user.lower() == 'удалятькоманды':
-        set_need_delete_commands(True)
-        bot.send_message(current_chat_id, 'команды пользователя будут удаляться')
+                else:
+                    update_inc(inc_num=inc_num_from_command, text=message_from_user, reporter=user)
+                    add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                              message_id=message_id_from_user,
+                                              text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
 
-    elif message_from_user.lower() == 'неудалятькоманды':
-        set_need_delete_commands(False)
-        bot.send_message(current_chat_id, 'команды пользователя не будут удаляться')
+            if check_inc_exist(inc_num_from_command):
+                get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
 
-    elif message_from_user.lower() == 'удалятьсвязанные':
-        set_need_delete_related_messages_after_closing(True)
-        bot.send_message(current_chat_id, 'предыдущие собщения бота по событию при его закрытии/удалении будут '
-                                          'удаляться')
+        elif message_from_user.lower() == 'всеинц':
+            if dict_of_incs.__len__() != 0:
+                for inc_num in dict_of_incs.keys():
+                    add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                              message_id=message_id_from_user,
+                                              text=print_inc(dict_of_incs[inc_num]))
+                    get_inc(inc_num=inc_num).messages.append(add_mes_id_to_inc)
+            else:
+                reply(chat_id=current_chat_id, message_id=message_id_from_user, text='событий нет')
 
-    elif message_from_user.lower() == 'неудалятьсвязанные':
-        set_need_delete_related_messages_after_closing(False)
-        bot.send_message(current_chat_id, 'предыдущие собщения бота по событию при его закрытии/удалении не будут '
-                                          'удаляться')
+        elif message_from_user.lower() == 'всеинцудалить':
+            clear_inc(current_chat_id)
+            reply(chat_id=current_chat_id, message_id=message_id_from_user, text='все события удалены')
 
-    elif message_from_user.lower() == 'писатьпользователейвотчете':
-        set_need_mention_user_in_full_print(True)
-        bot.send_message(current_chat_id, 'пользователи в отчетах будут упоминаться')
+        elif message_from_user.lower() == 'удалятькоманды':
+            set_need_delete_commands(True)
+            bot.send_message(current_chat_id, 'команды пользователя будут удаляться')
 
-    elif message_from_user.lower() == 'неписатьпользователейвотчете':
-        set_need_mention_user_in_full_print(False)
-        bot.send_message(current_chat_id, 'пользователи в отчетах не будут упоминаться')
+        elif message_from_user.lower() == 'неудалятькоманды':
+            set_need_delete_commands(False)
+            bot.send_message(current_chat_id, 'команды пользователя не будут удаляться')
+
+        elif message_from_user.lower() == 'удалятьсвязанные':
+            set_need_delete_related_messages_after_closing(True)
+            bot.send_message(current_chat_id, 'предыдущие собщения бота по событию при его закрытии/удалении будут '
+                                              'удаляться')
+
+        elif message_from_user.lower() == 'неудалятьсвязанные':
+            set_need_delete_related_messages_after_closing(False)
+            bot.send_message(current_chat_id, 'предыдущие собщения бота по событию при его закрытии/удалении не будут '
+                                              'удаляться')
+
+        elif message_from_user.lower() == 'писатьпользователейвотчете':
+            set_need_mention_user_in_full_print(True)
+            bot.send_message(current_chat_id, 'пользователи в отчетах будут упоминаться')
+
+        elif message_from_user.lower() == 'неписатьпользователейвотчете':
+            set_need_mention_user_in_full_print(False)
+            bot.send_message(current_chat_id, 'пользователи в отчетах не будут упоминаться')
+
+    except:
+        reply(chat_id=current_chat_id, message_id=message_id_from_user, text='ошибка')
 
 
 def is_tks_update_command(lst: list[str]) -> bool:
