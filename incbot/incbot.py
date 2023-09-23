@@ -47,8 +47,8 @@ with open('/incbot/PROPERTIES.json') as file:
 #     file.close()
 
 API_TOKEN = props_from_file['API_TOKEN']
-WEBHOOK_PORT = props_from_file['WEBHOOK_PORT']  # 443, 80, 88 or 8443 (port need to be 'open')
-WEBHOOK_HOST = int(props_from_file['WEBHOOK_HOST'])
+WEBHOOK_PORT = int(props_from_file['WEBHOOK_PORT'])  # 443, 80, 88 or 8443 (port need to be 'open')
+WEBHOOK_HOST = props_from_file['WEBHOOK_HOST']
 WEBHOOK_LISTEN = props_from_file['WEBHOOK_LISTEN']  # In some VPS you may need to put here the IP addr
 WEBHOOK_SSL_CERT = props_from_file['WEBHOOK_SSL_CERT']  # Path to the ssl certificate
 WEBHOOK_SSL_PRIV = props_from_file['WEBHOOK_SSL_PRIV']  # Path to the ssl private key
