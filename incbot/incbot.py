@@ -124,7 +124,7 @@ def get_user_text(message):
     current_chat_id = message.chat.id
     message_from_user: str = message.text
     message_id_from_user = message.message_id
-    user = message.from_user
+    user = message.from_user.username
     list_of_words_from_mes = message_from_user.split(' ')
 
     # try:
