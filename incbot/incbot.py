@@ -291,7 +291,10 @@ def print_inc(inc: Inc, short: bool = False):
         else:
             for update in inc.updates:
                 for text in update:
-                    result += str(update) + ' ' + inc.updates[update][text] + '\n'
+                    update_key = update
+                    update_user = inc.updates[update_key]
+                    update_text = inc.updates[update_key][update_user]
+                    result += str(update_key) + ': ' + str(update_user) + ': ' + update_text + '\n'
     if inc.end_time is not None:
         result += 'заверш: ' + inc.end_time + '\n'
     result += '\n'
