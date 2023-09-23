@@ -158,6 +158,10 @@ def get_user_text(message):
             dict_of_incs.pop(inc_num_from_command)
             bot.delete_message(chat_id=current_chat_id, message_id=message_id_from_user)
 
+        elif message_from_user.lower() == 'разверни':
+            add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                      message_id=message_id_from_user, text=print_inc(get_inc(inc_num_from_command)))
+
         elif is_tks_update_command(list_of_words_from_mes):
             update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1], reporter=user)
             add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user,
@@ -182,10 +186,6 @@ def get_user_text(message):
 
         if check_inc_exist(inc_num_from_command):
             get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
-
-    elif message_from_user.lower() == 'разверни':
-        clear_inc(current_chat_id)
-        reply(chat_id=current_chat_id, message_id=message_id_from_user, text='все события удалены')
 
     elif message_from_user.lower() == 'всеинц':
         if dict_of_incs.__len__() != 0:
