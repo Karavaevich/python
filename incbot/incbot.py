@@ -30,23 +30,24 @@ from datetime import datetime
 # WEBHOOK_SSL_CERT = '/ssl_for_bot/webhook_cert.pem'  # Path to the ssl certificate
 # WEBHOOK_SSL_PRIV = '/ssl_for_bot/webhook_pkey.pem'  # Path to the ssl private key
 
-# try:
-props_from_file = {str, str}
-with open('/incbot/PROPERTIES.cfg', 'r') as book_file:
-    for line in props_from_file:
-        prop, value = line.strip().split('=')
-        props_from_file[prop] = value
 
-API_TOKEN = props_from_file['API_TOKEN']
-WEBHOOK_PORT = props_from_file['WEBHOOK_PORT']  # 443, 80, 88 or 8443 (port need to be 'open')
-WEBHOOK_HOST = int(props_from_file['WEBHOOK_HOST'])
-WEBHOOK_LISTEN = props_from_file['WEBHOOK_LISTEN']  # In some VPS you may need to put here the IP addr
-WEBHOOK_SSL_CERT = props_from_file['WEBHOOK_SSL_CERT']  # Path to the ssl certificate
-WEBHOOK_SSL_PRIV = props_from_file['WEBHOOK_SSL_PRIV']  # Path to the ssl private key
-WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
-WEBHOOK_URL_PATH = "/%s/" % API_TOKEN
-# except:
-#     logging.critical(msg='Ошибка инициализации файла конфигурации')
+try:
+    props_from_file = {str, str}
+    with open('/incbot/PROPERTIES.cfg', 'r') as book_file:
+        for line in props_from_file:
+            prop, value = line.strip().split('=')
+            props_from_file[prop] = value
+
+    API_TOKEN = props_from_file['API_TOKEN']
+    WEBHOOK_PORT = props_from_file['WEBHOOK_PORT']  # 443, 80, 88 or 8443 (port need to be 'open')
+    WEBHOOK_HOST = int(props_from_file['WEBHOOK_HOST'])
+    WEBHOOK_LISTEN = props_from_file['WEBHOOK_LISTEN']  # In some VPS you may need to put here the IP addr
+    WEBHOOK_SSL_CERT = props_from_file['WEBHOOK_SSL_CERT']  # Path to the ssl certificate
+    WEBHOOK_SSL_PRIV = props_from_file['WEBHOOK_SSL_PRIV']  # Path to the ssl private key
+    WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
+    WEBHOOK_URL_PATH = "/%s/" % API_TOKEN
+except:
+    logging.critical(msg='Ошибка инициализации файла конфигурации')
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG)
