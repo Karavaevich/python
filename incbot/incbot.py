@@ -18,33 +18,9 @@ from datetime import datetime
 # When asked for "Common Name (e.g. server FQDN or YOUR name)" you should reply
 # with the same value in you put in WEBHOOK_HOST
 
-# pppincbot
-# API_TOKEN = '6449337054:AAE_Pa6ipXDR44502Dy9lhj_LY5hIuxGXQY'
-# WEBHOOK_PORT = 443  # 443, 80, 88 or 8443 (port need to be 'open')
-# KVAtestbot
-# API_TOKEN = '6402634448:AAGBaX0Iqn5U0EFyQrN62posnLWri7p7rPo'
-# WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
-# WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
-# WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
-# WEBHOOK_HOST = '94.139.255.242'
-# WEBHOOK_LISTEN = '192.168.0.178'  # In some VPS you may need to put here the IP addr
-# WEBHOOK_SSL_CERT = '/ssl_for_bot/webhook_cert.pem'  # Path to the ssl certificate
-# WEBHOOK_SSL_PRIV = '/ssl_for_bot/webhook_pkey.pem'  # Path to the ssl private key
-
-
-# try:
-
-# reading the data from the file
-
 with open('/incbot/PROPERTIES.json') as file:
     data = file.read()
     props_from_file = json.loads(data)
-
-# with open('/incbot/PROPERTIES.cfg', 'r') as file:
-#     for line in props_from_file:
-#         prop, value = line.split('=')
-#         props_from_file[prop] = value
-#     file.close()
 
 API_TOKEN = props_from_file['API_TOKEN']
 WEBHOOK_PORT = int(props_from_file['WEBHOOK_PORT'])  # 443, 80, 88 or 8443 (port need to be 'open')
@@ -54,8 +30,6 @@ WEBHOOK_SSL_CERT = props_from_file['WEBHOOK_SSL_CERT']  # Path to the ssl certif
 WEBHOOK_SSL_PRIV = props_from_file['WEBHOOK_SSL_PRIV']  # Path to the ssl private key
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % API_TOKEN
-# except:
-#     logging.critical(msg='Ошибка инициализации файла конфигурации')
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG)
@@ -135,6 +109,7 @@ def start(message):
 
 вывести события:
 “всеинц” - вывести список всех событий одним сообщением
+"развернуть" - если написать ответом на любое сообщение по событию, направится полное событие 
 
 очистить события:
 “всеинцудалить” - все события очистятся и счетчик сбросится
@@ -182,7 +157,7 @@ def get_user_text(message):
                 dict_of_incs.pop(inc_num_from_command)
                 bot.delete_message(chat_id=current_chat_id, message_id=message_id_from_user)
 
-            elif message_from_user.lower() == 'разверни':
+            elif message_from_user.lower() == 'развернуть':
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
                                           text=print_inc(get_inc(inc_num_from_command)))
