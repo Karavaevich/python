@@ -33,10 +33,11 @@ from datetime import datetime
 
 # try:
 props_from_file = {str, str}
-with open('/incbot/PROPERTIES.cfg', 'r') as book_file:
+with open('/incbot/PROPERTIES.cfg', 'r') as file:
     for line in props_from_file:
-        prop, value = line.split('=')
+        prop, value = line.split(',')
         props_from_file[prop] = value
+    file.close()
 
 API_TOKEN = props_from_file['API_TOKEN']
 WEBHOOK_PORT = props_from_file['WEBHOOK_PORT']  # 443, 80, 88 or 8443 (port need to be 'open')
