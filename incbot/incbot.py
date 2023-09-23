@@ -53,7 +53,7 @@ class Inc:
             updates = {}
         self.number: int = number
         self.description: str = description
-        self.updates: dict = updates
+        self.updates: dict[str, dict] = updates
         self.tks: str = tks
         self.start_time: str = start_time
         self.reporter: str = reporter
@@ -165,14 +165,14 @@ def get_user_text(message):
             bot.delete_message(chat_id=current_chat_id, message_id=message_id_from_user)
 
         elif is_tks_update_command(list_of_words_from_mes):
-            update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1])
+            update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1], reporter=user)
             add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user,
                                       text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
 
         else:
 
             if list_of_words_from_mes[-1].lower() == 'ок':
-                update_inc(inc_num=inc_num_from_command, text=message_from_user[:-3], end=get_now())
+                update_inc(inc_num=inc_num_from_command, text=message_from_user[:-3], end=get_now(), reporter=user)
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
                                           text='завершено:\n' + print_inc(get_inc(inc_num=inc_num_from_command)))
@@ -181,7 +181,7 @@ def get_user_text(message):
                     delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
 
             else:
-                update_inc(inc_num=inc_num_from_command, text=message_from_user)
+                update_inc(inc_num=inc_num_from_command, text=message_from_user, reporter=user)
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
                                           text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
@@ -257,12 +257,12 @@ def get_inc(inc_num: int) -> Inc:
     return dict_of_incs[inc_num]
 
 
-def update_inc(inc_num, text: Optional[str] = None, tks_num: Optional[str] = None, end: Optional[str] = None):
+def update_inc(inc_num, reporter: str, text: Optional[str] = None, tks_num: Optional[str] = None, end: Optional[str] = None):
     if (text is not None) & (text != ''):
         if dict_of_incs[inc_num].description is None:
             dict_of_incs[inc_num].description = text
         else:
-            dict_of_incs[inc_num].updates[get_now_short()] = text
+            dict_of_incs[inc_num].updates[get_now_short()][reporter] = text
     if tks_num is not None:
         dict_of_incs[inc_num].tks = tks_num
     if end is not None:
@@ -281,11 +281,14 @@ def print_inc(inc: Inc, short: bool = False):
         result += 'начало: ' + inc.start_time + '\n'
     if inc.updates.__len__() != 0:
         if short:
-            last_key = list(inc.updates)[-1]
-            result += 'статус: ' + inc.updates[last_key] + '\n'
+            last_update_key = list(inc.updates)[-1]
+            last_update_user = list(inc.updates[last_update_key].keys())[0]
+            last_update_text = inc.updates[last_update_key][last_update_user]
+            result += last_update_user + ': ' + last_update_text + '\n'
         else:
             for update in inc.updates:
-                result += update + ' ' + inc.updates[update] + '\n'
+                for text in update:
+                    result += update + ' ' + inc.updates[update][text] + '\n'
     if inc.end_time is not None:
         result += 'заверш: ' + inc.end_time + '\n'
     result += '\n'
