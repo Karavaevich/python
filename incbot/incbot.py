@@ -45,7 +45,7 @@ need_delete_related_messages_after_closing = True
 
 
 class Inc:
-    def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
+    def __init__(self, number: int, start_time: str, reporter: str, description: Optional[str] = None, updates=None,
                  tks: Optional[str] = None, end_time: Optional[str] = None, messages=None):
         if messages is None:
             messages = []
@@ -56,6 +56,7 @@ class Inc:
         self.updates: dict = updates
         self.tks: str = tks
         self.start_time: str = start_time
+        self.reporter: str = reporter
         self.end_time: str = end_time
         self.messages: list = messages
 
@@ -132,7 +133,7 @@ def get_user_text(message):
     if list_of_words_from_mes[0].lower() == 'инц':
 
         if list_of_words_from_mes.__len__() == 1:
-            new_inc = create_inc(start=str(get_now()))
+            new_inc = create_inc(start_datetime=str(get_now()), reporter=user)
             add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user, text=user + ': ' + print_inc(new_inc))
             new_inc.messages.append(add_mes_id_to_inc)
 
@@ -140,14 +141,14 @@ def get_user_text(message):
             des = message_from_user[4:]
 
             if des.lower().endswith('ок'):
-                new_inc = create_inc(descr=des.removesuffix('ок'), start=str(get_now()), end=str(get_now()))
+                new_inc = create_inc(descr=des.removesuffix('ок'), start_datetime=str(get_now()), end=str(get_now()), reporter=user)
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
                                           text=print_inc(new_inc))
                 new_inc.messages.append(add_mes_id_to_inc)
 
             else:
-                new_inc = create_inc(descr=des, start=str(get_now()))
+                new_inc = create_inc(descr=des, start_datetime=str(get_now()), reporter=user)
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
                                           text=print_inc(new_inc))
@@ -235,11 +236,11 @@ def reply(chat_id: str, message_id: int, text: str) -> int:
     return new_mes_id_for_adding_to_inc
 
 
-def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None) -> Inc:
+def create_inc(start_datetime: str, reporter: str, descr: Optional[str] = None, end: Optional[str] = None) -> Inc:
     global last_inc_num
     inc_num = last_inc_num + 1
     last_inc_num = inc_num
-    new_inc = Inc(number=inc_num, description=descr, start_time=start, end_time=end)
+    new_inc = Inc(number=inc_num, description=descr, start_time=start_datetime, end_time=end, reporter=reporter)
     dict_of_incs[inc_num] = new_inc
     return new_inc
 
@@ -269,6 +270,8 @@ def update_inc(inc_num, text: Optional[str] = None, tks_num: Optional[str] = Non
 
 def print_inc(inc: Inc, short: bool = False):
     result = ''
+    if inc.reporter is not None:
+        result += 'от:' + inc.reporter + '\n'
     if inc.description is not None:
         result += inc.description + '\n'
     if inc.tks is not None:
