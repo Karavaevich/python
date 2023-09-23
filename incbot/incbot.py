@@ -135,7 +135,7 @@ def get_user_text(message):
 
         if list_of_words_from_mes.__len__() == 1:
             new_inc = create_inc(start_datetime=str(get_now()), reporter=user)
-            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user, text=print_inc(new_inc))
+            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user, text=print_inc(inc=new_inc))
             new_inc.messages.append(add_mes_id_to_inc)
 
         else:
@@ -146,14 +146,14 @@ def get_user_text(message):
                 new_inc = create_inc(descr=des_for_inc, start_datetime=str(get_now()), end=str(get_now()), reporter=user)
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
-                                          text=print_inc(new_inc))
+                                          text=print_inc(inc=new_inc))
                 new_inc.messages.append(add_mes_id_to_inc)
 
             else:
                 new_inc = create_inc(descr=des, start_datetime=str(get_now()), reporter=user)
                 add_mes_id_to_inc = reply(chat_id=current_chat_id,
                                           message_id=message_id_from_user,
-                                          text=print_inc(new_inc))
+                                          text=print_inc(inc=new_inc))
                 new_inc.messages.append(add_mes_id_to_inc)
 
     elif is_update_command(message):
@@ -275,7 +275,8 @@ def update_inc(inc_num, reporter: str, text: Optional[str] = None, tks_num: Opti
 def print_inc(inc: Inc, short: bool = False):
     result = ''
     if inc.reporter is not None:
-        result += 'от ' + inc.reporter + '\n'
+        if not short:
+            result += 'от ' + inc.reporter + '\n'
     if inc.description is not None:
         result += inc.description + '\n'
     if inc.tks is not None:
