@@ -124,7 +124,7 @@ def get_user_text(message):
     current_chat_id = message.chat.id
     message_from_user: str = message.text
     message_id_from_user = message.message_id
-    user = message.from_user.username
+    user = '@' + message.from_user.username
     list_of_words_from_mes = message_from_user.split(' ')
 
     # try:
@@ -133,7 +133,7 @@ def get_user_text(message):
 
         if list_of_words_from_mes.__len__() == 1:
             new_inc = create_inc(start=str(get_now()))
-            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user, text=user + print_inc(new_inc))
+            add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user, text=user + ': ' + print_inc(new_inc))
             new_inc.messages.append(add_mes_id_to_inc)
 
         else:
