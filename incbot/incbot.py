@@ -198,7 +198,13 @@ def get_user_text(message):
             get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
 
     elif message_from_user.lower() == 'всеинц':
-        reply(chat_id=current_chat_id, message_id=message_id_from_user, text=str(print_dict_of_incs()))
+        if dict_of_incs.__len__() != 0:
+            reply(chat_id=current_chat_id, message_id=message_id_from_user, text='cписок: \n\n')
+            for inc_num in dict_of_incs.keys():
+                add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user, text=print_inc(dict_of_incs[inc_num]))
+                get_inc(inc_num=inc_num).messages.append(add_mes_id_to_inc)
+        else:
+            reply(chat_id=current_chat_id, message_id=message_id_from_user, text='событий нет')
 
     elif message_from_user.lower() == 'всеинцудалить':
         clear_inc(current_chat_id)
@@ -249,7 +255,10 @@ def is_update_command(message: telebot.types.Message) -> bool:
 def reply(chat_id: str, message_id: int, text: str) -> int:
     new_mes_id_for_adding_to_inc = bot.send_message(chat_id, text).message_id
     if need_delete_commands:
-        bot.delete_message(chat_id=chat_id, message_id=message_id)
+        try:
+            bot.delete_message(chat_id=chat_id, message_id=message_id)
+        except telebot.apihelper.ApiTelegramException():
+            pass
     return new_mes_id_for_adding_to_inc
 
 
