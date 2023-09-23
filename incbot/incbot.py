@@ -221,13 +221,13 @@ def get_user_text(message):
         bot.send_message(current_chat_id, 'предыдущие собщения бота по событию при его закрытии/удалении не будут '
                                           'удаляться')
 
-    elif message_from_user.lower() == 'неписатьпользователейвотчете':
-        set_need_mention_user_in_full_print(True)
-        bot.send_message(current_chat_id, 'пользователи в отчетах не будут упоминаться')
-
     elif message_from_user.lower() == 'писатьпользователейвотчете':
         set_need_mention_user_in_full_print(True)
         bot.send_message(current_chat_id, 'пользователи в отчетах будут упоминаться')
+
+    elif message_from_user.lower() == 'неписатьпользователейвотчете':
+        set_need_mention_user_in_full_print(False)
+        bot.send_message(current_chat_id, 'пользователи в отчетах не будут упоминаться')
 
 
 def is_tks_update_command(lst: list[str]) -> bool:
