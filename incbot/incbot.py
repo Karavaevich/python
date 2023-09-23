@@ -101,7 +101,6 @@ def start(message):
 создать событие:
 “инц” - присвоится только время начала
 “инц ТЕКСТ” - присвоится время начала и описание
-“инц ТЕКСТ ок” - присвоится описание, время начала+завершения
 
 изменить событие:
 ответить на любое из сообщений бота, связанного с событием, с текстом по след логике:
@@ -144,24 +143,11 @@ def get_user_text(message):
 
         else:
             des = message_from_user[4:]
-
-            if des.lower().endswith(' ок'):
-                des_for_inc = des[:-3]
-                new_inc = create_inc(descr=des_for_inc,
-                                     start_datetime=str(get_now()),
-                                     end=str(get_now()),
-                                     reporter=user)
-                add_mes_id_to_inc = reply(chat_id=current_chat_id,
-                                          message_id=message_id_from_user,
-                                          text=print_inc(inc=new_inc))
-                new_inc.messages.append(add_mes_id_to_inc)
-
-            else:
-                new_inc = create_inc(descr=des, start_datetime=str(get_now()), reporter=user)
-                add_mes_id_to_inc = reply(chat_id=current_chat_id,
-                                          message_id=message_id_from_user,
-                                          text=print_inc(inc=new_inc))
-                new_inc.messages.append(add_mes_id_to_inc)
+            new_inc = create_inc(descr=des, start_datetime=str(get_now()), reporter=user)
+            add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                      message_id=message_id_from_user,
+                                      text=print_inc(inc=new_inc))
+            new_inc.messages.append(add_mes_id_to_inc)
 
     elif is_update_command(message):
         inc_num_from_command = get_inc_by_message(message.reply_to_message.message_id)
@@ -197,11 +183,16 @@ def get_user_text(message):
         if check_inc_exist(inc_num_from_command):
             get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
 
+    elif message_from_user.lower() == 'разверни':
+        clear_inc(current_chat_id)
+        reply(chat_id=current_chat_id, message_id=message_id_from_user, text='все события удалены')
+
     elif message_from_user.lower() == 'всеинц':
         if dict_of_incs.__len__() != 0:
-            reply(chat_id=current_chat_id, message_id=message_id_from_user, text='cписок: \n\n')
             for inc_num in dict_of_incs.keys():
-                add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user, text=print_inc(dict_of_incs[inc_num]))
+                add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                          message_id=message_id_from_user,
+                                          text=print_inc(dict_of_incs[inc_num]))
                 get_inc(inc_num=inc_num).messages.append(add_mes_id_to_inc)
         else:
             reply(chat_id=current_chat_id, message_id=message_id_from_user, text='событий нет')
