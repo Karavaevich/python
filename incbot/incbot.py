@@ -1,3 +1,5 @@
+import collections
+import json
 import traceback
 from typing import Optional
 
@@ -16,14 +18,18 @@ from datetime import datetime
 # When asked for "Common Name (e.g. server FQDN or YOUR name)" you should reply
 # with the same value in you put in WEBHOOK_HOST
 
-API_TOKEN = '6449337054:AAE_Pa6ipXDR44502Dy9lhj_LY5hIuxGXQY'
-WEBHOOK_HOST = '94.139.255.242'
-WEBHOOK_PORT = 443  # 443, 80, 88 or 8443 (port need to be 'open')
-WEBHOOK_LISTEN = '192.168.0.178'  # In some VPS you may need to put here the IP addr
+with open('/incbot/PROPERTIES.json') as file:
+    data = file.read()
+    props_from_file = json.loads(data)
+
+API_TOKEN = props_from_file['API_TOKEN']
+WEBHOOK_PORT = int(props_from_file['WEBHOOK_PORT'])  # 443, 80, 88 or 8443 (port need to be 'open')
+WEBHOOK_HOST = props_from_file['WEBHOOK_HOST']
+WEBHOOK_LISTEN = props_from_file['WEBHOOK_LISTEN']  # In some VPS you may need to put here the IP addr
+WEBHOOK_SSL_CERT = props_from_file['WEBHOOK_SSL_CERT']  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = props_from_file['WEBHOOK_SSL_PRIV']  # Path to the ssl private key
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
-WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
-WEBHOOK_SSL_CERT = '/ssl_for_bot/webhook_cert.pem'  # Path to the ssl certificate
-WEBHOOK_SSL_PRIV = '/ssl_for_bot/webhook_pkey.pem'  # Path to the ssl private key
+WEBHOOK_URL_PATH = "/%s/" % API_TOKEN
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG)
@@ -33,20 +39,26 @@ app = flask.Flask(__name__)
 stable = True
 
 last_inc_num = 0
-need_delete_commands = False
+need_delete_commands = True
+need_delete_related_messages_after_closing = True
+need_mention_user_in_full_print = False
 
 
 class Inc:
-    def __init__(self, number: int, start_time: str, description: Optional[str] = None, updates=None,
-                 tks: Optional[str] = None, end_time: Optional[str] = None):
+    def __init__(self, number: int, start_time: str, reporter: str, description: Optional[str] = None, updates=None,
+                 tks: Optional[str] = None, end_time: Optional[str] = None, messages=None):
+        if messages is None:
+            messages = []
         if updates is None:
             updates = {}
         self.number: int = number
         self.description: str = description
-        self.updates: dict = updates
+        self.updates: dict[collections.Iterable, dict] = updates
         self.tks: str = tks
         self.start_time: str = start_time
+        self.reporter: str = reporter
         self.end_time: str = end_time
+        self.messages: list = messages
 
 
 dict_of_incs = dict()
@@ -85,140 +97,197 @@ def start(message):
 бот отслеживает ключевые слова и регистрирует события
 
 создать событие:
-“инц” - присвоится только номер и время начала
-“инц ТЕКСТ” - присвоится номер, время начала и описание
+“инц” - присвоится только время начала
+“инц ТЕКСТ” - присвоится время начала и описание
 
-обновить событие:
-“инц НОМЕР ТЕКСТ” - присвоится описание, если оно было пустое, иначе добавится новое дополнение со временем
+изменить событие:
+ответить на любое из сообщений бота, связанного с событием, с текстом по след логике:
+“ТЕКСТ” - присвоится описание, если оно было пустое, иначе добавится новое дополнение со временем
+“ткс НОМЕР_ТКС” - событию присвоится номер ткс
+“<ТЕКСТ> ок” - событию присвоится время завершения, текст опционален, если указан - запишется либо в описание, либо в дополнения
+"удалить" - удалить выбранное событие
 
-добавить номер ткс в событие:
-“инц ткс НОМЕР_ТКС” - событию присвоится номер ткс
-
-закрыть событие:
-“инц НОМЕР <ТЕКСТ> ок” - событию присвоится время завершения, текст опционален, если указан - запишется либо в описание, либо в дополнения
-*событие можно закрыть сразу при открытии, дописав “ок” в конце сообщения
-
-вывести событие:
-“инц НОМЕР” - вывести конкретное событие
+вывести события:
 “всеинц” - вывести список всех событий одним сообщением
+"развернуть" - если написать ответом на любое сообщение по событию, направится полное событие 
 
 очистить события:
-“инц НОМЕР удалить” - удалить конкретное событие
 “всеинцудалить” - все события очистятся и счетчик сбросится
+
+опции:
+"удалятькоманды / неудалятькоманды" - удалять ли команды(сообщения) пользователя
+"удалятьсвязанные / неудалятьсвязанные" - удалять ли все предыдущие собщения бота по событию при его завершении/удалении
+"писатьпользователейвотчете / писатьпользователейвотчете" - в отчете по событию писать автора каждого дополнения
     ''')
-
-
-@bot.message_handler(commands=['showbuttons'])
-def show_buttons(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    one = types.KeyboardButton('инц')
-    two = types.KeyboardButton('всеинц')
-    markup.add(one, two, row_width=2)
-    bot.send_message(message.chat.id, 'кнопки тут', reply_markup=markup)
-
-
-@bot.message_handler(commands=['removebuttons'])
-def remove_buttons(message):
-    markup = types.ReplyKeyboardRemove()
-    bot.send_message(message.chat.id, 'кнопок нет', reply_markup=markup)
 
 
 @bot.message_handler()
 def get_user_text(message):
-    chat_id_to_reply = message.chat.id
-    mes: str = message.text
-    list_of_words_from_mes = mes.split(' ')
+    current_chat_id = message.chat.id
+    message_from_user: str = message.text
+    message_id_from_user = message.message_id
+    user = '@' + message.from_user.username
+    list_of_words_from_mes = message_from_user.split(' ')
 
     try:
+
         if list_of_words_from_mes[0].lower() == 'инц':
+
             if list_of_words_from_mes.__len__() == 1:
-                new_inc = create_inc(start=str(get_now()))
-                reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
-            elif not list_of_words_from_mes[1].isnumeric():
-                des = ''
-                for i in range(1, list_of_words_from_mes.__len__()):
-                    des += str(list_of_words_from_mes[i]) + ' '
-                if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
-                    new_inc = create_inc(descr=des.removesuffix('ок '), start=str(get_now()), end=str(get_now()))
-                    reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
+                new_inc = create_inc(start_datetime=str(get_now()), reporter=user)
+                add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                          message_id=message_id_from_user,
+                                          text=print_inc(inc=new_inc))
+                new_inc.messages.append(add_mes_id_to_inc)
+
+            else:
+                des = message_from_user[4:]
+                new_inc = create_inc(descr=des, start_datetime=str(get_now()), reporter=user)
+                add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                          message_id=message_id_from_user,
+                                          text=print_inc(inc=new_inc))
+                new_inc.messages.append(add_mes_id_to_inc)
+
+        elif is_update_command(message):
+            inc_num_from_command = get_inc_by_message(message.reply_to_message.message_id)
+            add_mes_id_to_inc = None
+
+            if message_from_user.lower() == 'удалить':
+                delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
+                dict_of_incs.pop(inc_num_from_command)
+                bot.delete_message(chat_id=current_chat_id, message_id=message_id_from_user)
+
+            elif message_from_user.lower() == 'развернуть':
+                add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                          message_id=message_id_from_user,
+                                          text=print_inc(get_inc(inc_num_from_command)))
+
+            elif is_tks_update_command(list_of_words_from_mes):
+                update_inc(inc_num=int(inc_num_from_command), tks_num=list_of_words_from_mes[1], reporter=user)
+                add_mes_id_to_inc = reply(chat_id=current_chat_id, message_id=message_id_from_user,
+                                          text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
+
+            else:
+
+                if list_of_words_from_mes[-1].lower() == 'ок':
+                    update_inc(inc_num=inc_num_from_command, text=message_from_user[:-3], end=get_now(), reporter=user)
+                    add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                              message_id=message_id_from_user,
+                                              text='завершено:\n' + print_inc(get_inc(inc_num=inc_num_from_command)))
+
+                    if need_delete_related_messages_after_closing:
+                        delete_related_messages(chat_id=current_chat_id, inc_num=inc_num_from_command)
+
                 else:
-                    new_inc = create_inc(descr=des, start=str(get_now()))
-                    reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=print_inc(new_inc))
-            elif check_inc_exist(int(list_of_words_from_mes[1])):
-                if list_of_words_from_mes.__len__() == 2:
-                    reply(chat_id=chat_id_to_reply,
-                          message_id=message.message_id,
-                          text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1]))))
-                elif list_of_words_from_mes.__len__() > 2:
-                    if list_of_words_from_mes[2].lower() == 'удалить':
-                        reply(chat_id=chat_id_to_reply,
-                              message_id=message.message_id,
-                              text='удалено событие:\n' + print_inc(dict_of_incs.pop(int(
-                                  list_of_words_from_mes[1]))))
-                    elif list_of_words_from_mes[2].lower() == 'ткс':
-                        if list_of_words_from_mes.__len__() > 3:
-                            if list_of_words_from_mes[3].isnumeric():
-                                update_inc(inc_num=int(list_of_words_from_mes[1]), tks_num=list_of_words_from_mes[3])
-                                reply(chat_id=chat_id_to_reply,
-                                      message_id=message.message_id,
-                                      text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
-                    else:
-                        des = ''
-                        for i in range(2, list_of_words_from_mes.__len__()):
-                            des += str(list_of_words_from_mes[i]) + ' '
-                        if list_of_words_from_mes[list_of_words_from_mes.__len__() - 1].lower() == 'ок':
-                            update_inc(inc_num=int(list_of_words_from_mes[1]),
-                                       text=des.removesuffix('ок '),
-                                       end=get_now())
-                            reply(chat_id=chat_id_to_reply,
-                                  message_id=message.message_id,
-                                  text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
-                        else:
-                            update_inc(inc_num=int(list_of_words_from_mes[1]), text=des)
-                            reply(chat_id=chat_id_to_reply,
-                                  message_id=message.message_id,
-                                  text=print_inc(get_inc(inc_num=int(list_of_words_from_mes[1])), short=True))
-        elif list_of_words_from_mes[0].lower() == 'всеинц':
-            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text=str(print_dict_of_incs()))
-        elif list_of_words_from_mes[0].lower() == 'всеинцудалить':
-            clear_inc()
-            reply(chat_id=chat_id_to_reply, message_id=message.message_id, text='все события удалены')
-        elif list_of_words_from_mes[0].lower() == 'удалятькоманды':
+                    update_inc(inc_num=inc_num_from_command, text=message_from_user, reporter=user)
+                    add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                              message_id=message_id_from_user,
+                                              text=print_inc(get_inc(inc_num=inc_num_from_command), short=True))
+
+            if check_inc_exist(inc_num_from_command):
+                get_inc(inc_num=inc_num_from_command).messages.append(add_mes_id_to_inc)
+
+        elif message_from_user.lower() == 'всеинц':
+            if dict_of_incs.__len__() != 0:
+                for inc_num in dict_of_incs.keys():
+                    add_mes_id_to_inc = reply(chat_id=current_chat_id,
+                                              message_id=message_id_from_user,
+                                              text=print_inc(dict_of_incs[inc_num]))
+                    get_inc(inc_num=inc_num).messages.append(add_mes_id_to_inc)
+            else:
+                reply(chat_id=current_chat_id, message_id=message_id_from_user, text='событий нет')
+
+        elif message_from_user.lower() == 'всеинцудалить':
+            clear_inc(current_chat_id)
+            reply(chat_id=current_chat_id, message_id=message_id_from_user, text='все события удалены')
+
+        elif message_from_user.lower() == 'удалятькоманды':
             set_need_delete_commands(True)
-            bot.send_message(chat_id_to_reply, 'команды будут удаляться')
-        elif list_of_words_from_mes[0].lower() == 'неудалятькоманды':
+            bot.send_message(current_chat_id, 'команды пользователя будут удаляться')
+
+        elif message_from_user.lower() == 'неудалятькоманды':
             set_need_delete_commands(False)
-            bot.send_message(chat_id_to_reply, 'команды не будут удаляться')
+            bot.send_message(current_chat_id, 'команды пользователя не будут удаляться')
+
+        elif message_from_user.lower() == 'удалятьсвязанные':
+            set_need_delete_related_messages_after_closing(True)
+            bot.send_message(current_chat_id, 'предыдущие собщения бота по событию при его закрытии/удалении будут '
+                                              'удаляться')
+
+        elif message_from_user.lower() == 'неудалятьсвязанные':
+            set_need_delete_related_messages_after_closing(False)
+            bot.send_message(current_chat_id, 'предыдущие собщения бота по событию при его закрытии/удалении не будут '
+                                              'удаляться')
+
+        elif message_from_user.lower() == 'писатьпользователейвотчете':
+            set_need_mention_user_in_full_print(True)
+            bot.send_message(current_chat_id, 'пользователи в отчетах будут упоминаться')
+
+        elif message_from_user.lower() == 'неписатьпользователейвотчете':
+            set_need_mention_user_in_full_print(False)
+            bot.send_message(current_chat_id, 'пользователи в отчетах не будут упоминаться')
+
     except:
-        bot.send_message(chat_id_to_reply, 'ошибка')
+        reply(chat_id=current_chat_id, message_id=message_id_from_user, text='ошибка')
 
 
-def reply(chat_id: str, message_id: int, text: str):
-    bot.send_message(chat_id, text)
+def is_tks_update_command(lst: list[str]) -> bool:
+    if lst[0].lower() == 'ткс':
+        if lst.__len__() == 2:
+            if lst[1].isnumeric():
+                return True
+    return False
+
+
+def is_update_command(message: telebot.types.Message) -> bool:
+    if message.reply_to_message is not None:
+        if get_inc_by_message(message.reply_to_message.message_id) > 0:
+            return True
+        return False
+
+
+def reply(chat_id: str, message_id: int, text: str) -> int:
+    new_mes_id_for_adding_to_inc = bot.send_message(chat_id, text).message_id
     if need_delete_commands:
-        bot.delete_message(chat_id=chat_id, message_id=message_id)
+        try:
+            bot.delete_message(chat_id=chat_id, message_id=message_id)
+        except telebot.apihelper.ApiTelegramException:
+            pass
+    return new_mes_id_for_adding_to_inc
 
 
-def create_inc(descr: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
+def create_inc(start_datetime: str, reporter: str, descr: Optional[str] = None, end: Optional[str] = None) -> Inc:
     global last_inc_num
-    global map_of_incs
     inc_num = last_inc_num + 1
     last_inc_num = inc_num
-    new_inc = Inc(number=inc_num, description=descr, start_time=start, end_time=end)
+    new_inc = Inc(number=inc_num, description=descr, start_time=start_datetime, end_time=end, reporter=reporter)
     dict_of_incs[inc_num] = new_inc
     return new_inc
 
 
-def get_inc(inc_num: int):
+def delete_related_messages(chat_id: str, inc_num: int):
+    bot_messages = get_inc(inc_num=inc_num).messages
+    for bot_message in bot_messages:
+        try:
+            bot.delete_message(chat_id=chat_id, message_id=bot_message)
+        except telebot.apihelper.ApiTelegramException:
+            pass
+    bot_messages.clear()
+
+
+def get_inc(inc_num: int) -> Inc:
     return dict_of_incs[inc_num]
 
 
-def update_inc(inc_num, text: Optional[str] = None, tks_num: Optional[str] = None, end: Optional[str] = None):
+def update_inc(inc_num, reporter: str, text: Optional[str] = None, tks_num: Optional[str] = None,
+               end: Optional[str] = None):
     if (text is not None) & (text != ''):
         if dict_of_incs[inc_num].description is None:
             dict_of_incs[inc_num].description = text
         else:
-            dict_of_incs[inc_num].updates[get_now_short()] = text
+            new_update_time = get_now_short()
+            dict_of_incs[inc_num].updates[new_update_time] = {}
+            dict_of_incs[inc_num].updates[new_update_time][reporter] = text
     if tks_num is not None:
         dict_of_incs[inc_num].tks = tks_num
     if end is not None:
@@ -227,6 +296,9 @@ def update_inc(inc_num, text: Optional[str] = None, tks_num: Optional[str] = Non
 
 def print_inc(inc: Inc, short: bool = False):
     result = ''
+    if inc.reporter is not None:
+        if not short:
+            result += 'от ' + inc.reporter + '\n'
     if inc.description is not None:
         result += inc.description + '\n'
     if inc.tks is not None:
@@ -235,15 +307,20 @@ def print_inc(inc: Inc, short: bool = False):
         result += 'начало: ' + inc.start_time + '\n'
     if inc.updates.__len__() != 0:
         if short:
-            last_key = list(inc.updates)[-1]
-            result += 'статус: ' + inc.updates[last_key] + '\n'
+            last_update_key = list(inc.updates)[-1]
+            last_update_user = list(inc.updates[last_update_key].keys())[0]
+            last_update_text = inc.updates[last_update_key][last_update_user]
+            result += last_update_user + ': ' + last_update_text + '\n'
         else:
-            for update in inc.updates:
-                result += update + ' ' + inc.updates[update] + '\n'
+            for update_key in inc.updates.keys():
+                for update_user in inc.updates[update_key].keys():
+                    update_text = inc.updates[update_key][update_user]
+                    if need_mention_user_in_full_print:
+                        result += str(update_key) + ' ' + update_user + ': ' + update_text + '\n'
+                    else:
+                        result += str(update_key) + ': ' + update_text + '\n'
     if inc.end_time is not None:
         result += 'заверш: ' + inc.end_time + '\n'
-    if inc.number is not None:
-        result += 'админу: ' + str(inc.number) + '\n'
     result += '\n'
     return result
 
@@ -256,20 +333,30 @@ def get_now_short():
     return datetime.now().strftime('%H:%M:%S')
 
 
-def print_dict_of_incs():
-    result = ''
-    if dict_of_incs.__len__() != 0:
-        result = 'cписок: \n\n'
-        for inc_num in dict_of_incs.keys():
-            result += print_inc(dict_of_incs[inc_num])
-    else:
-        result = 'событий нет'
-    return result
+# def print_dict_of_incs():
+#     result = ''
+#     if dict_of_incs.__len__() != 0:
+#         result = 'cписок: \n\n'
+#         for inc_num in dict_of_incs.keys():
+#             result += print_inc(dict_of_incs[inc_num])
+#     else:
+#         result = 'событий нет'
+#     return result
 
 
 def set_need_delete_commands(flag: bool):
     global need_delete_commands
     need_delete_commands = flag
+
+
+def set_need_delete_related_messages_after_closing(flag: bool):
+    global need_delete_related_messages_after_closing
+    need_delete_related_messages_after_closing = flag
+
+
+def set_need_mention_user_in_full_print(flag: bool):
+    global need_mention_user_in_full_print
+    need_mention_user_in_full_print = flag
 
 
 def check_inc_exist(num):
@@ -279,8 +366,17 @@ def check_inc_exist(num):
         return False
 
 
-def clear_inc():
+def get_inc_by_message(mes_id: int) -> int:
+    for inc in dict_of_incs.keys():
+        if dict_of_incs[inc].messages.__contains__(mes_id):
+            return dict_of_incs[inc].number
+    return 0
+
+
+def clear_inc(chat_id):
     global last_inc_num
+    for inc in dict_of_incs.keys():
+        delete_related_messages(chat_id=chat_id, inc_num=inc)
     dict_of_incs.clear()
     last_inc_num = 0
 
