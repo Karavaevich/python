@@ -141,7 +141,7 @@ def reply_same(message):
     bot.send_message(chat_id=message.chat.id, text=json_string)
 
 
-@bot.message_handler(content_types=['text'])
+@bot.message_handler(content_types=['text', 'photo', 'video', 'document'])
 def get_user_text(message):
     current_chat_id = message.chat.id
     message_from_user: str = message.text
