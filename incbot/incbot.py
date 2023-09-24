@@ -65,6 +65,7 @@ dict_of_incs = dict()
 
 json_string = ''
 
+
 # Process webhook calls
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
 def webhook():
@@ -126,7 +127,7 @@ def start(message):
 @bot.message_handler(content_types=['photo'])
 def reply_same(message):
     global json_string
-    photo = message.photo.file_id
+    photo = message.photo[3].file_id
     bot.send_photo(chat_id=message.chat.id, photo=photo)
     # bot.send_message(chat_id=message.chat.id, text=json_string)
 
