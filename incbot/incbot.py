@@ -18,7 +18,7 @@ from datetime import datetime
 # When asked for "Common Name (e.g. server FQDN or YOUR name)" you should reply
 # with the same value in you put in WEBHOOK_HOST
 
-with open('/incbot/PROPERTIES.json') as file:
+with open('/incbot/kvatestbot_PROPERTIES.json') as file:
     data = file.read()
     props_from_file = json.loads(data)
 
@@ -120,8 +120,7 @@ def start(message):
 "писатьпользователейвотчете / писатьпользователейвотчете" - в отчете по событию писать автора каждого дополнения
     ''')
 
-
-@bot.message_handler()
+@bot.message_handler(content_types= ['text'])
 def get_user_text(message):
     current_chat_id = message.chat.id
     message_from_user: str = message.text
