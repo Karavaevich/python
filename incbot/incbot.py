@@ -122,9 +122,11 @@ def start(message):
 
 
 @bot.message_handler(content_types=['photo'])
+global json_string
 def reply_same(message):
     photo = message.chat.photo.big_file_id
-    bot.send_photo(chat_id=message.chat.id, photo=photo)
+    # bot.send_photo(chat_id=message.chat.id, photo=photo)
+    bot.send_message(chat_id=message.chat.id, text=json_string)
 
 
 @bot.message_handler(content_types=['text'])
