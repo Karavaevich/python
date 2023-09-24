@@ -63,10 +63,12 @@ class Inc:
 
 dict_of_incs = dict()
 
+json_string = ''
 
 # Process webhook calls
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
 def webhook():
+    global json_string
     if flask.request.headers.get('content-type') == 'application/json':
         json_string = flask.request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
@@ -122,8 +124,8 @@ def start(message):
 
 
 @bot.message_handler(content_types=['photo'])
-global json_string
 def reply_same(message):
+    global json_string
     photo = message.chat.photo.big_file_id
     # bot.send_photo(chat_id=message.chat.id, photo=photo)
     bot.send_message(chat_id=message.chat.id, text=json_string)
