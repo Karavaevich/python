@@ -120,7 +120,14 @@ def start(message):
 "писатьпользователейвотчете / писатьпользователейвотчете" - в отчете по событию писать автора каждого дополнения
     ''')
 
-@bot.message_handler(content_types= ['text'])
+
+@bot.message_handler(content_types=['photo'])
+def reply_same(message):
+    photo = message.photo
+    bot.send_photo(chat_id=message.chat.id, photo=photo)
+
+
+@bot.message_handler(content_types=['text'])
 def get_user_text(message):
     current_chat_id = message.chat.id
     message_from_user: str = message.text
