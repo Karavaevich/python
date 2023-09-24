@@ -123,7 +123,7 @@ def start(message):
 
 @bot.message_handler(content_types=['photo'])
 def reply_same(message):
-    photo = message.chat.small_file_id
+    photo = message.chat.photo.small_file_id
     bot.send_photo(chat_id=message.chat.id, photo=photo)
 
 
