@@ -46,11 +46,17 @@ need_mention_user_in_full_print = False
 
 class Inc:
     def __init__(self, number: int, start_time: str, reporter: str, description: Optional[str] = None, updates=None,
-                 tks: Optional[str] = None, end_time: Optional[str] = None, messages=None):
+                 tks: Optional[str] = None, end_time: Optional[str] = None, messages=None, photos=None, videos=None, documents=None):
         if messages is None:
             messages = []
         if updates is None:
             updates = {}
+        if photos is None:
+            photos = []
+        if videos is None:
+            videos = []
+        if documents is None:
+            documents = []
         self.number: int = number
         self.description: str = description
         self.updates: dict[collections.Iterable, dict] = updates
@@ -59,6 +65,9 @@ class Inc:
         self.reporter: str = reporter
         self.end_time: str = end_time
         self.messages: list = messages
+        self.photos: list = photos
+        self.videos: list = videos
+        self.documents: list = documents
 
 
 dict_of_incs = dict()
