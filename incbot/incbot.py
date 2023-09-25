@@ -18,7 +18,7 @@ from datetime import datetime
 # When asked for "Common Name (e.g. server FQDN or YOUR name)" you should reply
 # with the same value in you put in WEBHOOK_HOST
 
-with open('/incbot/kvatestbot_PROPERTIES.json') as file:
+with open('/incbot/PROPERTIES.json') as file:
     data = file.read()
     props_from_file = json.loads(data)
 
@@ -46,17 +46,11 @@ need_mention_user_in_full_print = False
 
 class Inc:
     def __init__(self, number: int, start_time: str, reporter: str, description: Optional[str] = None, updates=None,
-                 tks: Optional[str] = None, end_time: Optional[str] = None, messages=None, photos=None, videos=None, documents=None):
+                 tks: Optional[str] = None, end_time: Optional[str] = None, messages=None):
         if messages is None:
             messages = []
         if updates is None:
             updates = {}
-        if photos is None:
-            photos = []
-        if videos is None:
-            videos = []
-        if documents is None:
-            documents = []
         self.number: int = number
         self.description: str = description
         self.updates: dict[collections.Iterable, dict] = updates
@@ -65,20 +59,14 @@ class Inc:
         self.reporter: str = reporter
         self.end_time: str = end_time
         self.messages: list = messages
-        self.photos: list = photos
-        self.videos: list = videos
-        self.documents: list = documents
 
 
 dict_of_incs = dict()
-
-json_string = ''
 
 
 # Process webhook calls
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
 def webhook():
-    global json_string
     if flask.request.headers.get('content-type') == 'application/json':
         json_string = flask.request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
@@ -132,16 +120,8 @@ def start(message):
 "писатьпользователейвотчете / писатьпользователейвотчете" - в отчете по событию писать автора каждого дополнения
     ''')
 
-#
-# @bot.message_handler(content_types=['photo'])
-# def reply_same(message):
-#     global json_string
-#     photo = message.photo[3].file_id
-#     bot.send_photo(chat_id=message.chat.id, photo=photo)
-#     bot.send_message(chat_id=message.chat.id, text=json_string)
 
-
-@bot.message_handler(content_types=['text', 'photo', 'video', 'document'])
+@bot.message_handler()
 def get_user_text(message):
     current_chat_id = message.chat.id
     message_from_user: str = message.text
