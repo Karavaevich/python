@@ -42,7 +42,7 @@ last_inc_num = 0
 need_delete_commands = True
 need_delete_related_messages_after_closing = True
 need_mention_user_in_full_print = False
-
+json_string = ''
 
 class Inc:
     def __init__(self, number: int, start_time: str, reporter: str, description: Optional[str] = None, updates=None,
@@ -68,6 +68,7 @@ dict_of_incs = dict()
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
 def webhook():
     if flask.request.headers.get('content-type') == 'application/json':
+        global json_string
         json_string = flask.request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
         bot.process_new_updates([update])
@@ -236,6 +237,8 @@ def get_user_text(message):
 
     except:
         reply(chat_id=current_chat_id, message_id=message_id_from_user, text='ошибка')
+    finally:
+        bot.send_message(current_chat_id, json_string)
 
 
 def is_tks_update_command(lst: list[str]) -> bool:
