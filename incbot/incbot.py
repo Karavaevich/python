@@ -133,7 +133,7 @@ def get_user_text(message):
         if message.from_user.last_name is not None:
             user += ' ' + message.from_user.last_name
     else:
-        user = message.from_user.username
+        user += message.from_user.username
     list_of_words_from_mes = message_from_user.split(' ')
 
     try:
